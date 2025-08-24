@@ -37,12 +37,19 @@ export default function FinancePage() {
                 Organize seus gastos, planeje seu futuro e colabore com amigos e
                 família. Tudo em um só lugar, de forma simples e segura.
               </p>
-              <div className="mt-8">
+              <div className="mt-8 flex gap-4">
                 <Button
                   asChild
                   className="bg-amber-300 text-black hover:bg-amber-200"
                 >
                   <Link href="/dashboard">Acessar Dashboard</Link>
+                </Button>{" "}
+                <Button
+                  asChild
+                  variant="outline"
+                  className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-900/50 hover:border-neutral-600 hover:text-neutral-100"
+                >
+                  <Link href="/login">Entrar</Link>
                 </Button>
               </div>
               <div className="mt-10 grid grid-cols-3 gap-6">

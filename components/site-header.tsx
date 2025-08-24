@@ -33,7 +33,7 @@ export default function SiteHeader() {
           <span
             className={`${jetmono.className} text-[10px] tracking-widest uppercase text-neutral-500 group-hover:text-amber-300 transition-colors`}
           >
-            controle • economia • riqueza
+            controle • economia
           </span>
         </Link>
 
