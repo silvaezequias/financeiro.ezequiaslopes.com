@@ -1,103 +1,169 @@
-import Image from "next/image";
+import Link from "next/link";
+import {
+  PieChart,
+  Users,
+  TrendingUp,
+  Shield,
+  Smartphone,
+  BarChart3,
+  Target,
+  DollarSign,
+} from "lucide-react";
+import SiteHeader from "@/components/site-header";
+import SiteFooter from "@/components/site-footer";
+import GrainBG from "@/components/grain-bg";
+import { Button } from "@/components/ui/button";
+import { garamond, jetmono } from "@/lib/fonts";
 
-export default function Home() {
+export default function FinancePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="min-h-screen bg-black text-neutral-200">
+      <GrainBG>
+        <SiteHeader />
+        <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-16 pb-24">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16 items-center">
+            <div>
+              <p
+                className={`${jetmono.className} text-[11px] uppercase tracking-widest text-neutral-500`}
+              >
+                Finanças • Pessoal • Grupos
+              </p>
+              <h1
+                className={`${garamond.className} mt-3 text-4xl sm:text-5xl leading-tight text-neutral-100`}
+              >
+                Controle suas finanças pessoais e em grupos com simplicidade.
+              </h1>
+              <p className="mt-5 text-neutral-400 max-w-prose">
+                Organize seus gastos, planeje seu futuro e colabore com amigos e
+                família. Tudo em um só lugar, de forma simples e segura.
+              </p>
+              <div className="mt-8">
+                <Button
+                  asChild
+                  className="bg-amber-300 text-black hover:bg-amber-200"
+                >
+                  <Link href="/dashboard">Acessar Dashboard</Link>
+                </Button>
+              </div>
+              <div className="mt-10 grid grid-cols-3 gap-6">
+                <div className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-4">
+                  <PieChart className="h-5 w-5 text-amber-300" />
+                  <div className="mt-2 text-sm text-neutral-400">
+                    Controle de Gastos
+                  </div>
+                </div>
+                <div className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-4">
+                  <Users className="h-5 w-5 text-amber-300" />
+                  <div className="mt-2 text-sm text-neutral-400">
+                    Finanças em Grupo
+                  </div>
+                </div>
+                <div className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-4">
+                  <Target className="h-5 w-5 text-amber-300" />
+                  <div className="mt-2 text-sm text-neutral-400">
+                    Metas Financeiras
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950">
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-amber-300">
+                    <DollarSign className="h-5 w-5" />
+                    <span
+                      className={`${jetmono.className} text-xs uppercase tracking-widest`}
+                    >
+                      Resumo Financeiro
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-neutral-400">Receitas</span>
+                      <span className="text-amber-300 font-semibold">
+                        R$ 5.240
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-neutral-400">Gastos</span>
+                      <span className="text-neutral-200 font-semibold">
+                        R$ 3.180
+                      </span>
+                    </div>
+                    <div className="border-t border-neutral-800 pt-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-neutral-200 font-medium">
+                          Saldo
+                        </span>
+                        <span className="text-amber-300 font-bold text-xl">
+                          R$ 2.060
+                        </span>
+                      </div>
+                    </div>
+                    <div className="bg-neutral-900/60 rounded-lg p-3">
+                      <div className="flex items-center gap-2 text-sm text-neutral-300">
+                        <TrendingUp className="h-4 w-4 text-amber-300" />
+                        <span>+12% em relação ao mês passado</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 ring-1 ring-inset ring-neutral-900/60" />
+              </div>
+              <p
+                className={`${jetmono.className} mt-3 text-[10px] uppercase tracking-widest text-neutral-500`}
+              >
+                {'"Organize. Planeje. Conquiste."'}
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <section className="mx-auto max-w-5xl px-4 sm:px-6 pb-20">
+          <div className="flex items-end justify-between">
+            <h2 className={`${garamond.className} text-2xl text-neutral-100`}>
+              Recursos Principais
+            </h2>
+          </div>
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                icon: BarChart3,
+                title: "Relatórios Detalhados",
+                description:
+                  "Análises completas dos seus hábitos financeiros com insights personalizados",
+              },
+              {
+                icon: Shield,
+                title: "Segurança Total",
+                description:
+                  "Seus dados protegidos com criptografia de ponta e backup automático",
+              },
+              {
+                icon: Smartphone,
+                title: "Acesso Multiplataforma",
+                description:
+                  "Use no celular, tablet ou computador. Seus dados sempre sincronizados",
+              },
+            ].map((feature, i) => (
+              <div
+                key={i}
+                className="group relative overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950/40 p-6"
+              >
+                <feature.icon className="h-6 w-6 text-amber-300 mb-3" />
+                <h3 className="text-neutral-100 font-medium mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-neutral-400">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <SiteFooter />
+      </GrainBG>
+    </main>
   );
 }
