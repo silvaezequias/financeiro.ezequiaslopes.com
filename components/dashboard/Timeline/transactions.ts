@@ -4,6 +4,7 @@ export const mockTransactions = [
   { date: new Date(2025, 0, 16), amount: -150, description: "Supermercado" },
   { date: new Date(2025, 0, 17), amount: -80, description: "Combustível" },
   { date: new Date(2025, 6, 18), amount: -35000, description: "Casa" },
+  { date: new Date(2025, 7, 18), amount: 20000, description: "Teste " },
   { date: new Date(2025, 0, 20), amount: -45, description: "Netflix" },
   { date: new Date(2025, 0, 25), amount: -200, description: "Restaurante" },
   { date: new Date(2025, 1, 1), amount: 3000, description: "Freelance" },

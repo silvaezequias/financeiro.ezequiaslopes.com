@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   if (password !== confirmPassword) {
     return NextResponse.json(
-      { error: "Passwords do not match" },
+      { error: "As senhas não conferem" },
       { status: 400 }
     );
   }
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   if (existingUser) {
     return NextResponse.json(
-      { error: "CPF or email already exists" },
+      { error: "CPF ou Email já existe" },
       { status: 400 }
     );
   }
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const { valid, verified } = await validateCpf(cpf);
 
   if (!valid) {
-    return NextResponse.json({ error: "Invalid CPF" }, { status: 400 });
+    return NextResponse.json({ error: "CPF Inválido" }, { status: 400 });
   }
 
   const user = await database.user.create({
@@ -45,5 +45,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ message: "User created", userId: user.id });
+  return NextResponse.json({ status: "ok" }, { status: 201 });
 }

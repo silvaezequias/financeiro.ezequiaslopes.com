@@ -29,10 +29,18 @@ import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
+import { ErrorModal } from "@/components/error-modal";
+import { set } from "date-fns";
+import { useRouter } from "next/navigation";
+import { validatePassword } from "@/lib/validatePassword";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [modalErrorMessage, setModalErrorMessage] = useState("");
+  const [modalErrorTitle, setModalErrorTitle] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     cpf: "",
@@ -42,6 +50,8 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
+
+  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -65,9 +75,44 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      alert("As senhas não coincidem!");
+      setError("As senhas não conferem");
+      setIsLoading(false);
+      return;
+    }
+
+    const validatedPassowrd = validatePassword(formData.password);
+
+    if (!validatedPassowrd.valid) {
+      const { length, lowercase, number, specialChar, uppercase } =
+        validatedPassowrd;
+
+      setIsLoading(false);
+
+      if (!length) {
+        setError("A senha deve ter no mínimo 8 caracteres.");
+        return;
+      }
+      if (!uppercase) {
+        setError("A senha deve conter ao menos uma letra maiúscula.");
+        return;
+      }
+      if (!lowercase) {
+        setError("A senha deve conter ao menos uma letra minúscula.");
+        return;
+      }
+      if (!number) {
+        setError("A senha deve conter ao menos um número.");
+        return;
+      }
+      if (!specialChar) {
+        setError("A senha deve conter ao menos um caractere especial.");
+        return;
+      }
+      setError("Por favor, insira uma senha válida.");
       return;
     }
 
@@ -75,17 +120,47 @@ export default function RegisterPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
+    }).then((r) => {
+      try {
+        console.log(r);
+        if (r.status === 201) {
+          router.push("/login");
+        }
+        setIsLoading(false);
+        return r.json();
+      } catch (err) {
+        console.log("error", err);
+        setIsLoading(false);
+        return { error: "" };
+      }
     });
+
+    setIsLoading(false);
+
+    if ("error" in res && res.error) {
+      setError(res.error);
+      setIsLoading(false);
+      return;
+    }
   };
 
   const handleGoogleRegister = () => {
     // TODO: Implementar registro com Google
-    console.log("Registro com Google");
+    setModalErrorTitle("Funcionalidade em breve");
+    setModalErrorMessage(
+      "Estamos trabalhando para trazer essa funcionalidade em breve. Fique atento às atualizações!"
+    );
   };
 
   return (
     <Layout>
-      <section className="mx-auto max-w-md px-4 sm:px-6 pt-16 pb-24">
+      <ErrorModal
+        isOpen={!!modalErrorMessage}
+        message={modalErrorMessage}
+        title={modalErrorTitle}
+        onClose={() => setModalErrorMessage("")}
+      />
+      <section className="mx-auto max-w-md w-xl px-4 sm:px-6 pt-16 pb-24">
         <div className="text-center mb-8">
           <h1
             className={`${garamond.className} text-3xl text-neutral-100 mb-2`}
@@ -141,6 +216,12 @@ export default function RegisterPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="p-3 text-sm text-red-400 bg-red-950/20 border border-red-900/20 rounded">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-neutral-200">
                   Nome Completo
@@ -153,6 +234,7 @@ export default function RegisterPage() {
                     placeholder="Seu nome completo"
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
+                    min={10}
                     className="pl-10 bg-neutral-900/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500"
                     required
                   />
@@ -307,8 +389,9 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 className="w-full bg-amber-300 text-black hover:bg-amber-200"
+                disabled={isLoading}
               >
-                Criar Conta
+                {isLoading ? "Verificando..." : "Criar Conta"}
               </Button>
             </form>
 

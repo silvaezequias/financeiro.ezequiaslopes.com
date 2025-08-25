@@ -38,6 +38,14 @@ export const recentTransactions = [
     type: "expense",
   },
   {
+    id: 6,
+    description: "Teste de Transação",
+    amount: 1000,
+    date: "2025-10-19",
+    category: "Entretenimento",
+    type: "expense",
+  },
+  {
     id: 4,
     description: "Freelance",
     amount: 1200.0,

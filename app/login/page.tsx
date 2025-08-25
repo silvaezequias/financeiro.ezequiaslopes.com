@@ -22,7 +22,7 @@ import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
 import { validateCpf } from "@/lib/validateCpf";
 import { validatePassword } from "@/lib/validatePassword";
-import Layout from "@/components/Layout";
+import { UnauthenticatedLayout } from "@/components/Layout";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -104,16 +104,20 @@ export default function LoginPage() {
       return;
     }
 
-    setModalErrorTitle("Login indisponível");
-    setModalErrorMessage(
-      "Funcionalidade de login ainda está em fase de testes."
-    );
-
     const res = await signIn("credentials", {
       redirect: false,
       cpf: cpf.replace(/\D/g, ""),
       password,
     });
+
+    if (res?.error) {
+      setError("CPF ou senha incorretos.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
+    setIsLoading(false);
   };
 
   const handleGoogleLogin = () => {
@@ -125,7 +129,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Layout>
+    <UnauthenticatedLayout>
       <ErrorModal
         isOpen={!!modalErrorMessage}
         message={modalErrorMessage}
@@ -262,6 +266,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </section>
-    </Layout>
+    </UnauthenticatedLayout>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { unauthorized, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Shield,
@@ -32,11 +33,10 @@ import {
   Bar,
 } from "recharts";
 import DashboardCard from "@/components/dashboard/dashboard-card";
-import CreditCardComponent from "@/components/dashboard/credit-card";
 import PeriodDetails from "@/components/dashboard/Timeline/period-details";
-import Layout from "@/components/Layout";
+import Layout, { AuthenticatedLayout } from "@/components/Layout";
 import Timeline from "@/components/dashboard/Timeline";
-import { isAdmin, recentTransactions, userCards } from "./financialData";
+import { isAdmin } from "./financialData";
 import Wallet from "./Wallet";
 import RecentTransactions from "./RecentTransactions";
 import MyCards from "./MyCards";
@@ -59,8 +59,21 @@ export default function DashboardPage() {
     setSelectedPeriod(period);
   };
 
+  const { data: session, status } = useSession();
+
+  if (status === "unauthenticated") {
+    unauthorized();
+    return null;
+  }
+
+  useEffect(() => {
+    alert(
+      "Esta página está em desenvolvimento. As informações exibidas são apenas exemplos e não refletem dados reais."
+    );
+  }, []);
+
   return (
-    <Layout>
+    <AuthenticatedLayout>
       <section className="mx-auto w-screen max-w-full sm:px-6 pt-8 pb-12 ">
         <div className="mb-8">
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
@@ -189,6 +202,6 @@ export default function DashboardPage() {
           </Button>
         </div>
       </section>
-    </Layout>
+    </AuthenticatedLayout>
   );
 }
