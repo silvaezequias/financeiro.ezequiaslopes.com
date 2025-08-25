@@ -18,7 +18,6 @@ import Layout from "@/components/Layout";
 export default function LogoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
   const router = useRouter();
   const user = {} as {
     name?: string;
@@ -39,7 +38,7 @@ export default function LogoutPage() {
     }
   };
 
-  if (!isAuthenticated) {
+  if (status !== "authenticated") {
     router.push("/login");
     return null;
   }
