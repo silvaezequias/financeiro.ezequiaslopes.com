@@ -6,7 +6,15 @@ import { validateCpf } from "@/lib/validateCpf";
 
 export async function POST(req: NextRequest) {
   const { name, cpf, phone, birthDate, email, password, confirmPassword } =
-    await req.json();
+    (await req.json()) as {
+      name: string;
+      cpf: string;
+      phone: string;
+      birthDate: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+    };
 
   if (password !== confirmPassword) {
     return NextResponse.json(
@@ -36,8 +44,8 @@ export async function POST(req: NextRequest) {
   const user = await database.user.create({
     data: {
       name,
-      cpf,
-      phone,
+      cpf: cpf.replace(/\D/g, ""),
+      phone: phone.replace(/\D/g, ""),
       birthDate: new Date(birthDate),
       email,
       password: hashedPassword,
