@@ -5,6 +5,7 @@ import type React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,8 +18,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
 import { validateCpf } from "@/lib/validateCpf";
@@ -36,6 +35,12 @@ export default function LoginPage() {
   const [modalErrorTitle, setModalErrorTitle] = useState("");
 
   const router = useRouter();
+  const session = useSession();
+
+  if (session.status === "authenticated") {
+    router.push("/dashboard");
+    return null;
+  }
 
   const formatCPF = (value: string) => {
     let numbers = value.replace(/\D/g, "");
@@ -86,15 +91,16 @@ export default function LoginPage() {
     }
 
     const validatedCpf = await validateCpf(cpf);
-    setIsLoading(false);
 
     if (!validatedCpf.valid) {
       setError("Por favor, insira um CPF válido.");
+      setIsLoading(false);
       return;
     }
 
     if (!validatedCpf.verified) {
       setError("Por favor, insira um CPF existente.");
+      setIsLoading(false);
       return;
     }
 
@@ -102,6 +108,12 @@ export default function LoginPage() {
     setModalErrorMessage(
       "Funcionalidade de login ainda está em fase de testes."
     );
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      cpf: cpf.replace(/\D/g, ""),
+      password,
+    });
   };
 
   const handleGoogleLogin = () => {

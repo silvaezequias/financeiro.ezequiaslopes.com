@@ -34,7 +34,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     cpf: "",
     phone: "",
     birthDate: "",
@@ -63,7 +63,7 @@ export default function RegisterPage() {
     return numbers.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -71,8 +71,11 @@ export default function RegisterPage() {
       return;
     }
 
-    // TODO: Implementar lógica de registro
-    console.log("Registro:", formData);
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
   };
 
   const handleGoogleRegister = () => {
@@ -139,19 +142,17 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-neutral-200">
+                <Label htmlFor="name" className="text-neutral-200">
                   Nome Completo
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
                   <Input
-                    id="fullName"
+                    id="name"
                     type="text"
                     placeholder="Seu nome completo"
-                    value={formData.fullName}
-                    onChange={(e) =>
-                      handleInputChange("fullName", e.target.value)
-                    }
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
                     className="pl-10 bg-neutral-900/50 border-neutral-700 text-neutral-200 placeholder:text-neutral-500"
                     required
                   />
