@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
-import { mockTransactions, getBalanceForPeriod } from "./Timeline/transactions";
+import { mockTransactions, getBalanceForPeriod } from "./transactions";
 
 interface Transaction {
   date: Date;
@@ -123,7 +123,7 @@ export default function PeriodDetails({
             <h4 className="text-sm font-medium text-neutral-300 mb-3">
               Transações
             </h4>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="space-y-2">
               {filteredTransactions
                 .sort((a, b) => {
                   return b.date.getTime() - a.date.getTime();

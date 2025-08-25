@@ -16,7 +16,7 @@ export default function TimelineCell(props: TimelineCellProps) {
     props.date,
     props.type
   );
-  const balanceColor = balance > -0.9 ? "bg-green-500" : "bg-red-500";
+  const balanceColor = balance > -0.9 ? "bg-green-500/40" : "bg-red-500/40";
 
   const date = props.date.getDate();
   const month = props.date.getMonth() + 1;
@@ -45,7 +45,7 @@ export default function TimelineCell(props: TimelineCellProps) {
         ring-1 ring-transparent hover:ring-neutral-200 
         text-neutral-300 
         border-0 
-        ${balanceColor}/40 
+        ${balanceColor}
         rounded-lg text-xs font-medium 
         transition-colors border
         duration-500

@@ -18,15 +18,15 @@ export default function CreditCard({ card }: CreditCardProps) {
   let barColor = "";
 
   if (usedPercentage > 33) {
-    if (usedPercentage > 66) barColor = "bg-red-500/70";
-    else barColor = "bg-amber-300";
-  }
+    if (usedPercentage > 66) barColor = "bg-neutral-800";
+    else barColor = "bg-neutral-500";
+  } else barColor = "bg-neutral-300";
 
   return (
     <div
       className={`bg-gradient-to-br ${card.color} max-w-[350px] aspect-[4/2.5] rounded-lg p-4 flex flex-col justify-between text-white`}
     >
-      <div className="flex justify-between items-start ">
+      <div className="flex bg- justify-between items-start ">
         <div>
           <p className="text-xs opacity-80">{card.bank}</p>
           <p className="text-lg font-bold">{card.number}</p>
