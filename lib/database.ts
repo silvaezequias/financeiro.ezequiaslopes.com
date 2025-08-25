@@ -3,9 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-console.log("NEXT_PUBLIC_DATABASE_URL:", process.env.NEXT_PUBLIC_DATABASE_URL);
-
 declare global {
   var database: PrismaClient | undefined;
 }
@@ -13,6 +10,7 @@ declare global {
 export const database =
   global.database ||
   new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL,
     log: ["error"], // opcional, para debug
   });
 
