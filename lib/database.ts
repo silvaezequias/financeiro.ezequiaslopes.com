@@ -1,4 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("NEXT_PUBLIC_DATABASE_URL:", process.env.NEXT_PUBLIC_DATABASE_URL);
 
 declare global {
   var database: PrismaClient | undefined;
