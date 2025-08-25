@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import { LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,10 @@ import {
 } from "@/components/ui/card";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
-// import { useAuth } from "@/lib/auth"
-
 export default function LogoutPage() {
   const [isLoading, setIsLoading] = useState(false);
-  // const { logout, user, isAuthenticated } = useAuth()
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
   const router = useRouter();
   const user = {} as {
     name?: string;
@@ -29,9 +29,8 @@ export default function LogoutPage() {
     setIsLoading(true);
 
     try {
-      // Simular um pequeno delay para melhor UX
       await new Promise((resolve) => setTimeout(resolve, 500));
-      // logout();
+      signOut({ redirect: false });
       router.push("/");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
@@ -40,11 +39,10 @@ export default function LogoutPage() {
     }
   };
 
-  // Se não estiver autenticado, redirecionar para login
-  // if (!isAuthenticated) {
-  //    router.push("/login")
-  //   return null
-  // }
+  if (!isAuthenticated) {
+    router.push("/login");
+    return null;
+  }
 
   return (
     <Layout>
