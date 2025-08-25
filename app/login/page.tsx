@@ -19,7 +19,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
-import GrainBG from "@/components/grain-bg";
 import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
 import { validateCpf } from "@/lib/validateCpf";
