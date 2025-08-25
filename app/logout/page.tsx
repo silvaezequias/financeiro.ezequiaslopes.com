@@ -38,7 +38,7 @@ export default function LogoutPage() {
     }
   };
 
-  if (status !== "authenticated") {
+  if (status === "unauthenticated" && !session) {
     router.push("/login");
     return null;
   }
