@@ -5,6 +5,9 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import brand from "@/lib/brand";
 import { Providers } from "./Providers";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const metadata: Metadata = {
   title: brand.brandName,
