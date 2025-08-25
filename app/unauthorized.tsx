@@ -1,17 +1,25 @@
 "use client";
 
-import { ShieldX, Home, LogOut } from "lucide-react";
+import { ShieldX, Home, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function AccessDeniedPage() {
-  // const { logout } = useAuth();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const handleLogout = () => {
-    // logout();
+    signOut({ redirect: false });
+    router.push("/");
+  };
+
+  const handleLogin = () => {
+    router.push("/login");
   };
 
   return (
@@ -46,16 +54,25 @@ export default function AccessDeniedPage() {
                     Voltar à página inicial
                   </Link>
                 </Button>
-
-                <Button
-                  variant="outline"
-                  disabled
-                  onClick={handleLogout}
-                  className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800 bg-transparent"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sair
-                </Button>
+                {session ? (
+                  <Button
+                    variant="outline"
+                    onClick={handleLogout}
+                    className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800 bg-transparent"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sair
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={handleLogin}
+                    className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800 bg-transparent"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Entrar
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>

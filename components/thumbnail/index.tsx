@@ -29,14 +29,12 @@ export default async function Thumbnail(props: ThumnailProps) {
       <div tw="bg-black text-white w-full h-full font-bold flex flex-col justify-between border-[30px] border-amber-300 px-20 py-10">
         <span tw="w-full h-fit flex flex-col justify-center">
           <span tw="flex items-center justify-between border-b border-neutral-800">
-            <span tw="text-amber-300 text-[130px]">EL</span>
-            <span tw="text-white text-[70px]">
-              {props.title || "Currículo"}
-            </span>
+            <span tw="text-amber-300 text-[130px]">Financeiro.</span>
           </span>
           <span tw="w-full flex flex-col justify-center pt-1 h-[190px] my-10">
             <span tw="text-white font-light text-7xl leading-1">
-              {props.description || "Descubra o portfólio de Ezequias Lopes."}
+              {props.description ||
+                "Controle e economize seu dinheiro de forma simples"}
             </span>
           </span>
         </span>
