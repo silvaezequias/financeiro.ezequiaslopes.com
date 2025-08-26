@@ -2,48 +2,80 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 import { database } from "@/lib/database";
-import { validateCpf } from "@/lib/validateCpf";
+import controller from "@/middleware";
+import { Middleware } from "nextfastapi/types";
+import { FlowContext } from "@/middleware/flow";
+import { BadRequestError } from "nextfastapi/errors";
+import { User } from "@prisma/client";
+import validation from "@/validation";
 
-export async function POST(req: NextRequest) {
-  const { name, cpf, phone, birthDate, email, password, confirmPassword } =
-    await req.json();
+type PostInputBody = {
+  name: string;
+  cpf: string;
+  phone: string;
+  birthDate: string;
+  email: string;
+  password: string;
+  confirmPassword?: string;
+};
 
-  if (password !== confirmPassword) {
-    return NextResponse.json(
-      { error: "As senhas não conferem" },
-      { status: 400 }
-    );
+type UserRegisterContext = { userData: Partial<User> } & FlowContext;
+
+const handlePostValidation: Middleware<UserRegisterContext> = async (
+  req,
+  _,
+  next
+) => {
+  const { confirmPassword, ...props } = (await req.json()) as PostInputBody;
+
+  const userObject = await validation.user(
+    {
+      birthDate: true,
+      cpf: true,
+      email: true,
+      name: true,
+      phone: true,
+      password: true,
+    },
+    props as unknown as Partial<User>
+  );
+
+  if (props.password !== confirmPassword) {
+    throw new BadRequestError({ message: "As senhas não conferem." });
   }
 
   const existingUser = await database.user.findFirst({
-    where: { OR: [{ cpf }, { email }] },
+    where: { OR: [{ cpf: userObject.cpf }, { email: userObject.email }] },
   });
 
   if (existingUser) {
-    return NextResponse.json(
-      { error: "CPF ou Email já existe" },
-      { status: 400 }
-    );
+    throw new BadRequestError({
+      message: "Já existe um cadastrado com esse CPF ou Email.",
+    });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const { valid, verified } = await validateCpf(cpf);
+  req.context.userData = userObject;
+  return next();
+};
 
-  if (!valid) {
-    return NextResponse.json({ error: "CPF Inválido" }, { status: 400 });
-  }
+const handlePost: Middleware<UserRegisterContext> = async (req) => {
+  const userData = req.context.userData;
+  const hashedPassword = await bcrypt.hash(userData.password!, 10);
 
-  const user = await database.user.create({
+  const createdUser = await database.user.create({
     data: {
-      name,
-      cpf,
-      phone,
-      birthDate: new Date(birthDate),
-      email,
+      name: userData.name!,
+      birthDate: userData.birthDate!,
+      cpf: userData.cpf!,
+      email: userData.email!,
       password: hashedPassword,
-      verified,
+      phone: userData.phone,
+      role: userData.role,
     },
   });
 
-  return NextResponse.json({ status: "ok" }, { status: 201 });
-}
+  return Response.json(userData, { status: 201 });
+};
+
+controller.post(handlePostValidation, handlePost);
+export const POST = controller.expose();

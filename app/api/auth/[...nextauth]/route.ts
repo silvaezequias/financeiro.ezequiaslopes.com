@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { database } from "@/lib/database";
@@ -6,6 +6,7 @@ import { database } from "@/lib/database";
 const authOptions = {
   session: {
     strategy: "jwt",
+    updateAge: 10 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -27,9 +28,8 @@ const authOptions = {
           credentials.password,
           user.password
         );
-        if (!isValid) return null;
 
-        if (!user.verified) return null;
+        if (!isValid) return null;
 
         return {
           id: user.id,
@@ -59,7 +59,7 @@ const authOptions = {
       return session;
     },
   },
-};
+} as AuthOptions;
 
 const handler = NextAuth(authOptions);
 

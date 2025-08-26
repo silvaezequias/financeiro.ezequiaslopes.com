@@ -111,7 +111,7 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError("CPF ou senha incorretos.");
+      setError(res.error);
       setIsLoading(false);
       return;
     }
