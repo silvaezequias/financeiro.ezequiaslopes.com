@@ -15,5 +15,6 @@ model User {
   phone     String?
   birthDate DateTime
   password  String
-  verified  Boolean  @default(false) // flag do CPF verificado
+  verified  Boolean  @default(false)
+  role      String?  @default("user")
 }
