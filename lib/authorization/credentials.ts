@@ -21,14 +21,28 @@ enum UserCredential {
   UpdateUserOther = "update:user:other",
 }
 
+enum WalletCredential {
+  CreateWallet = "create:wallet",
+  ReadWallet = "read:wallet",
+  ReadWalletList = "read:wallet:list",
+  ReadWalletOther = "read:wallet:other",
+  UpdateWallet = "update:wallet",
+  UpdateWalletOther = "update:wallet:other",
+  JoinWallet = "join:wallet",
+  JoinWalletOther = "join:wallet:other",
+  LeaveWallet = "leave:wallet",
+}
+
 const credentials = {
   authorizationCode: AuthorizationCodeCredential,
   session: SessionCredential,
   user: UserCredential,
+  wallet: WalletCredential,
 };
 
 export default credentials;
 export type Credentials =
   | AuthorizationCodeCredential
   | SessionCredential
-  | UserCredential;
+  | UserCredential
+  | WalletCredential;

@@ -17,4 +17,77 @@ model User {
   password  String
   verified  Boolean  @default(false)
   role      String?  @default("user")
+
+  WalletMember   WalletMember[]
+  Transaction    Transaction[]
+  creditCards    CreditCard[]
+  WalletAuditLog WalletAuditLog[]
+}
+
+model WalletMember {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  walletId    String   @db.ObjectId
+  role        String
+  permissions String[]
+  joinedAt    DateTime @default(now())
+}
+
+model Wallet {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  color    String?
+  imageUrl String?
+
+  WalletMember   WalletMember[]
+  Transaction    Transaction[]
+  CreditCard     CreditCard[]
+  WalletAuditLog WalletAuditLog[]
+}
+
+model WalletAuditLog {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  wallet       Wallet   @relation(fields: [walletId], references: [id])
+  walletId     String   @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @db.ObjectId
+  action       String
+  timestamp    DateTime @default(now())
+  previousData Json?
+  newData      Json?
+}
+
+model Transaction {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  amount Float
+
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String @db.ObjectId
+
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+  walletId String @db.ObjectId
+
+  creditCard   CreditCard? @relation(fields: [creditCardId], references: [id])
+  creditCardId String?     @db.ObjectId
+
+  category    String?
+  description String?
+  date        DateTime @default(now())
+}
+
+model CreditCard {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  wallet       Wallet        @relation(fields: [walletId], references: [id])
+  walletId     String        @db.ObjectId
+  name         String
+  limit        Float
+  usedAmount   Float
+  billingDate  Int
+  nextDueDate  DateTime
+  visibleTo    String[]
+  transactions Transaction[]
+  User         User?         @relation(fields: [userId], references: [id])
+  userId       String?       @db.ObjectId
 }

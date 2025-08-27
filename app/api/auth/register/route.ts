@@ -8,6 +8,8 @@ import { FlowContext } from "@/middleware/flow";
 import { BadRequestError } from "nextfastapi/errors";
 import { User } from "@prisma/client";
 import validation from "@/validation";
+import { UserRole } from "@/lib/authorization/role";
+import { flightRouterStateSchema } from "next/dist/server/app-render/types";
 
 type PostInputBody = {
   name: string;
@@ -40,7 +42,7 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
     props as unknown as Partial<User>
   );
 
-  if (props.password !== confirmPassword) {
+  if (userObject.password !== confirmPassword) {
     throw new BadRequestError({ message: "As senhas não conferem." });
   }
 
@@ -70,7 +72,8 @@ const handlePost: Middleware<UserRegisterContext> = async (req) => {
       email: userData.email!,
       password: hashedPassword,
       phone: userData.phone,
-      role: userData.role,
+      role: UserRole.id,
+      verified: false,
     },
   });
 

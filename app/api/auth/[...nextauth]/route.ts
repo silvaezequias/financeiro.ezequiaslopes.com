@@ -40,9 +40,7 @@ const authOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: "/auth/login", // opcional
-  },
+  pages: { signIn: "/auth/login" },
   callbacks: {
     async jwt({ token, user }: { token: any; user?: any }) {
       if (user) {
@@ -63,5 +61,7 @@ const authOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export const GET = handler;
+export const POST = handler;
+
 export { authOptions };

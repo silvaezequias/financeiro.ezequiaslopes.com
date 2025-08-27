@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 import { AnonymousRole, getRoleById, UserRole } from "@/lib/authorization/role";
 import { registerRequesterCredentials } from "@/lib/authorization/accessControl";
 import { FlowContext } from "../flow";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const SessionInjector: Middleware<FlowContext> = async (req, _, next) => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   let requesterUser = { role: AnonymousRole.id };
   let requesterCredentialsManager = registerRequesterCredentials(AnonymousRole);

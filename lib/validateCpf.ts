@@ -28,7 +28,7 @@ export async function checkCpfExists(cpf: string): Promise<boolean | null> {
     );
     return res.data === true;
   } catch {
-    return null; // fallback in case of error
+    return null;
   }
 }
 

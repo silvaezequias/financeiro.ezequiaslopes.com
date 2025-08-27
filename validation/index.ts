@@ -1,75 +1,67 @@
-import formatter from "@/formatter";
-import { UserRole } from "@/lib/authorization/role";
-import { validateCpf } from "@/lib/validateCpf";
-import { User } from "@prisma/client";
-import { BadRequestError } from "nextfastapi/errors";
+import {
+  CreditCard,
+  Transaction,
+  User,
+  Wallet,
+  WalletAuditLog,
+  WalletMember,
+} from "@prisma/client";
+import { BadRequestError, transformError } from "nextfastapi/errors";
+import validationKeys, { KOValidationKeys } from "./keys";
+import { ZodError } from "zod";
 
 type Bool<Schema> = Partial<Record<keyof Schema, boolean>>;
 
 const validation = {
-  user: validateUser,
+  user: validate<User>,
+  wallet: validate<Wallet>,
+  walletMember: validate<WalletMember>,
+  walletAuditLog: validate<WalletAuditLog>,
+  transaction: validate<Transaction>,
+  creditCard: validate<CreditCard>,
 };
 
-async function validateUser(requiredKeys: Bool<User>, data: Partial<User>) {
-  Object.entries(requiredKeys).forEach(([key, value]) => {
+async function validate<Model>(
+  requiredKeys: Bool<Model>,
+  data: Partial<Model>
+) {
+  const filteredInput: Partial<Model> = {};
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key in requiredKeys)
+      filteredInput[key as keyof Model] = value as typeof value & undefined;
+  });
+
+  for (const [key, value] of Object.entries(requiredKeys)) {
     if (value) {
-      if (!(key in data) || !data[key as unknown as keyof User]) {
+      if (!(key in filteredInput)) {
         throw new BadRequestError({
           message: "Insira todos os dados necessários.",
           action: key,
         });
       }
     }
-  });
 
-  const CPF = await validateCpf(data.cpf!);
-  const userObject: Partial<User> = {};
+    if (key in validationKeys && key in filteredInput) {
+      try {
+        const validated = await validationKeys[
+          key as KOValidationKeys
+        ]?.parseAsync(filteredInput[key as keyof Model]);
 
-  if (!CPF.valid) {
-    throw new BadRequestError({
-      message: "Este CPF é inválido.",
-    });
-  }
+        filteredInput[key as keyof Model] = validated as typeof validated &
+          undefined;
+      } catch (err) {
+        let message = "Algum dado está incorreto.";
 
-  const { cpf, phone, birthDate, ...leftData } = data;
+        if (err instanceof Error) message = err.message;
+        if (err instanceof ZodError) message = err.errors[0].message;
 
-  Object.entries(leftData).forEach(([key, value]) => {
-    if (key in requiredKeys) {
-      userObject[key as keyof User] = value as typeof value & undefined;
-    }
-  });
-
-  if ("cpf" in requiredKeys) {
-    userObject.cpf = formatter.extract.onlyNumbers(data.cpf!);
-  }
-
-  if ("phone" in requiredKeys) {
-    userObject.phone = formatter.extract.onlyNumbers(data.phone!);
-
-    if (
-      !userObject.phone ||
-      userObject.phone.length < 10 ||
-      userObject.phone.length > 11
-    ) {
-      throw new BadRequestError({
-        message: "Insira um telefone válido",
-      });
+        throw new BadRequestError({ message });
+      }
     }
   }
 
-  if ("birthDate" in requiredKeys) {
-    userObject.birthDate = new Date(data.birthDate!);
-  }
-
-  if ("verified" in requiredKeys) {
-    userObject.verified = CPF.verified;
-  }
-
-  if ("role" in requiredKeys) {
-    userObject.role = UserRole.id;
-  }
-
-  return userObject;
+  return filteredInput;
 }
 
 export default validation;
