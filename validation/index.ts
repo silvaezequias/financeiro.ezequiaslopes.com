@@ -44,12 +44,14 @@ async function validate<Model>(
 
     if (key in validationKeys && key in filteredInput) {
       try {
-        const validated = await validationKeys[
-          key as KOValidationKeys
-        ]?.parseAsync(filteredInput[key as keyof Model]);
+        if (filteredInput[key as keyof Model] || value) {
+          const validated = await validationKeys[
+            key as KOValidationKeys
+          ]?.parseAsync(filteredInput[key as keyof Model]);
 
-        filteredInput[key as keyof Model] = validated as typeof validated &
-          undefined;
+          filteredInput[key as keyof Model] = validated as typeof validated &
+            undefined;
+        }
       } catch (err) {
         let message = "Algum dado está incorreto.";
 

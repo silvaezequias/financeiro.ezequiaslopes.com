@@ -11,7 +11,7 @@ export const database =
   global.database ||
   new PrismaClient({
     datasourceUrl: process.env.DATABASE_URL,
-    log: ["error"], // opcional, para debug
+    log: ["error"],
   });
 
 if (process.env.NODE_ENV !== "production") global.database = database;

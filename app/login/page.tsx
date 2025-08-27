@@ -20,7 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
-import { validateCpf } from "@/lib/validateCpf";
+import { isValidCpfStructure, validateCpf } from "@/lib/validateCpf";
 import { validatePassword } from "@/lib/validatePassword";
 import { UnauthenticatedLayout } from "@/components/Layout";
 
@@ -90,16 +90,10 @@ export default function LoginPage() {
       return;
     }
 
-    const validatedCpf = await validateCpf(cpf);
+    const isValidCpf = isValidCpfStructure(cpf);
 
-    if (!validatedCpf.valid) {
+    if (!isValidCpf) {
       setError("Por favor, insira um CPF válido.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!validatedCpf.verified) {
-      setError("Por favor, insira um CPF existente.");
       setIsLoading(false);
       return;
     }

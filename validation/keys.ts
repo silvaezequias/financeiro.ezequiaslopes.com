@@ -56,6 +56,7 @@ const validationKeys = {
       return age >= MIN_AGE;
     }, `Lei nº 10.406/2002 | A idade mínima para essa operação é de ${MIN_AGE} anos.`),
 
+  permissions: z.array(z.string()),
   password: z
     .string()
     .min(8, "Senha deve ter no mínimo 8 caracteres")

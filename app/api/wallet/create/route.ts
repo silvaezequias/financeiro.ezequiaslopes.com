@@ -1,6 +1,8 @@
-import credentials from "@/lib/authorization/credentials";
+import credentials, {
+  WalletPermissions,
+} from "@/lib/authorization/credentials";
 import controller from "@/middleware";
-import { FlowContext } from "@/middleware/flow";
+import { AuthenticatedSession, FlowContext } from "@/middleware/flow";
 import validation from "@/validation";
 import { Wallet } from "@prisma/client";
 import { UnauthorizedError } from "nextfastapi/errors";
@@ -37,14 +39,26 @@ const handleValidationPost: Middleware<CreateWalletContext> = async (
   return next();
 };
 
-const handlePost: Middleware<CreateWalletContext> = async (req) => {
+const handlePost: Middleware<
+  CreateWalletContext & AuthenticatedSession
+> = async (req) => {
   const { walletData } = req.context;
 
-  const createdWallet = await database?.wallet.create({
+  const user = req.context.session.user;
+
+  const wallet = await database!.wallet.create({
     data: { ...walletData, name: walletData.name! },
   });
 
-  return Response.json({ createdWallet }, { status: 201 });
+  const walletMember = await database?.walletMember.create({
+    data: {
+      permissions: WalletPermissions.walletMember.owner,
+      userId: user.id,
+      walletId: wallet.id,
+    },
+  });
+
+  return Response.json({ wallet, walletMember }, { status: 201 });
 };
 
 controller.post(handleValidationPost, handlePost);

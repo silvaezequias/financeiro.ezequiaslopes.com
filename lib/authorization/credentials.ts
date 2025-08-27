@@ -46,3 +46,20 @@ export type Credentials =
   | SessionCredential
   | UserCredential
   | WalletCredential;
+
+const GuestWalletMemberRoles = [
+  WalletCredential.ReadWallet,
+  WalletCredential.LeaveWallet,
+];
+
+const OwnerWalletMemberRoles = [
+  ...GuestWalletMemberRoles,
+  WalletCredential.UpdateWallet,
+];
+
+export const WalletPermissions = {
+  walletMember: {
+    owner: OwnerWalletMemberRoles,
+    guest: GuestWalletMemberRoles,
+  },
+};
