@@ -4,7 +4,6 @@ import validation from "@/validation";
 import { Wallet } from "@prisma/client";
 import { NotFoundError } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
-import { truncateByDomain } from "recharts/types/util/ChartUtils";
 
 type WalletParms = {
   id: string;
@@ -33,17 +32,19 @@ const handleGet: Middleware<WalletContext & AuthenticatedSession> = async (
   const user = req.context.session.user;
   const walletObject = req.context.walletData;
 
-  const walletMember = await database!.walletMember.findFirst({
+  const walletMember = await database!.walletMember.findUnique({
     where: {
-      userId: user.id,
-      walletId: walletObject.id,
+      userId_walletId: {
+        userId: user.id,
+        walletId: walletObject.id,
+      },
     },
     include: { wallet: true },
   });
 
   if (!walletMember) {
     throw new NotFoundError({
-      message: "Nenhuma carteira foi encontrada com esse ID.",
+      message: "Essa carteira não existe ou você não tem acesso à ela.",
     });
   }
 
@@ -65,7 +66,7 @@ const handleGet: Middleware<WalletContext & AuthenticatedSession> = async (
     walletMember.wallet
   );
 
-  return Response.json({ wallet: { ...wallet, member } }, { status: 200 });
+  return Response.json({ wallet: { ...wallet, member } });
 };
 
 controller.get(handleValidationGet, handleGet);
