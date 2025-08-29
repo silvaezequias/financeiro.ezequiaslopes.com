@@ -6,7 +6,7 @@ import { NotFoundError } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
 
 type WalletParms = {
-  id: string;
+  walletId: string;
 };
 
 type WalletContext = FlowContext & {
@@ -19,7 +19,11 @@ const handleValidationGet: Middleware<WalletContext, WalletParms> = async (
   next
 ) => {
   const params = await (promiseParams as unknown as Promise<WalletParms>);
-  const walletObject = await validation.wallet({ id: true }, params);
+  const walletObject = await validation.wallet(
+    { id: true },
+    { id: params.walletId }
+  );
+
   req.context.walletData = walletObject as WalletContext["walletData"];
 
   return next();
@@ -66,7 +70,7 @@ const handleGet: Middleware<WalletContext & AuthenticatedSession> = async (
     walletMember.wallet
   );
 
-  return Response.json({ wallet: { ...wallet, member } });
+  return Response.json({ member: { ...member, wallet } });
 };
 
 controller.get(handleValidationGet, handleGet);

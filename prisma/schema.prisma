@@ -41,11 +41,30 @@ model Wallet {
   name     String
   color    String?
   imageUrl String?
+  currency String? @default("BRL")
 
   WalletMember   WalletMember[]
   Transaction    Transaction[]
   CreditCard     CreditCard[]
   WalletAuditLog WalletAuditLog[]
+  WalletSummary  WalletSummary[]
+}
+
+model WalletSummary {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+  walletId String @db.ObjectId
+
+  year    Int
+  month   Int
+  balance Float
+  income  Float
+  expense Float
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([walletId, year, month])
 }
 
 model WalletAuditLog {
@@ -75,7 +94,9 @@ model Transaction {
 
   category    String?
   description String?
-  date        DateTime @default(now())
+  billingDate DateTime @default(now())
+
+  @@index([createdById, walletId, billingDate])
 }
 
 model CreditCard {
