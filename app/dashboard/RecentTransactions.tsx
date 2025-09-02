@@ -4,9 +4,17 @@ import Link from "next/link";
 import { recentTransactions } from "./financialData";
 import { Button } from "@/components/ui/button";
 
-export default function RecentTransactions() {
+export default function RecentTransactions({
+  className,
+}: {
+  className?: string;
+}) {
   return (
-    <DashboardCard title="TRANSAÇÕES RECENTES" icon={Receipt}>
+    <DashboardCard
+      title="TRANSAÇÕES RECENTES"
+      icon={Receipt}
+      className={className || ""}
+    >
       <div className="space-y-3">
         {recentTransactions.slice(0, 3).map((transaction) => (
           <div

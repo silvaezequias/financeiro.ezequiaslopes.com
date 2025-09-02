@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 import { database } from "@/lib/database";
-import controller from "@/middleware";
+import { controller } from "@/middleware";
 import { Middleware } from "nextfastapi/types";
 import { FlowContext } from "@/middleware/flow";
 import { BadRequestError } from "nextfastapi/errors";

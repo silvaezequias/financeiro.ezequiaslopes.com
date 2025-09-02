@@ -25,14 +25,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
 import { ErrorModal } from "@/components/error-modal";
-import { set } from "date-fns";
 import { useRouter } from "next/navigation";
 import { validatePassword } from "@/lib/validatePassword";
+import smartFetch from "@/lib/smartFetch";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -116,26 +114,17 @@ export default function RegisterPage() {
       return;
     }
 
-    const res = await fetch("/api/auth/register", {
+    const res = await smartFetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
-    }).then((r) => {
-      try {
-        console.log(r);
-        if (r.status === 201) {
-          router.push("/login");
-        }
-        setIsLoading(false);
-        return r.json();
-      } catch (err) {
-        console.log("error", err);
-        setIsLoading(false);
-        return { error: "" };
-      }
     });
 
     setIsLoading(false);
+
+    if (res.status === 201) {
+      router.push("/login");
+    }
 
     if ("error" in res && res.error) {
       setError(res.error);

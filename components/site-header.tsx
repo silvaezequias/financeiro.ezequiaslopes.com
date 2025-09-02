@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, X, User, LogOut } from "lucide-react";
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Wallet,
+  ChevronDown,
+  LayoutDashboard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -21,6 +29,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { garamond, jetmono } from "@/lib/fonts";
 import brand from "@/lib/brand";
+import { WalletDropdownSelect } from "./Wallet/WalletDropdownSelect";
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -29,11 +38,7 @@ export default function SiteHeader() {
   const user = session?.user;
 
   const links = isAuthenticated
-    ? [
-        { href: "/", label: "Início" },
-        { href: "/dashboard", label: "Dashboard" },
-        { href: "/group", label: "Grupo" },
-      ]
+    ? []
     : [
         { href: "/", label: "Início" },
         { href: "/login", label: "Entrar" },
@@ -67,6 +72,7 @@ export default function SiteHeader() {
             controle • economia
           </span>
         </Link>
+
         <nav
           aria-label="Primária"
           className="hidden md:flex items-center gap-8"
@@ -90,7 +96,7 @@ export default function SiteHeader() {
               </Link>
             );
           })}
-
+          {isAuthenticated && <WalletDropdownSelect />}
           {isAuthenticated && user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -124,17 +130,17 @@ export default function SiteHeader() {
                   className="text-neutral-200 hover:bg-neutral-800"
                 >
                   <Link href="/dashboard">
-                    <User className="mr-2 h-4 w-4" />
-                    Dashboard
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Painel de Controle
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   asChild
                   className="text-neutral-200 hover:bg-neutral-800"
                 >
-                  <Link href="/group">
+                  <Link href="/perfil">
                     <User className="mr-2 h-4 w-4" />
-                    Grupo
+                    Perfil
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-neutral-700" />
@@ -206,7 +212,6 @@ export default function SiteHeader() {
                     </Link>
                   );
                 })}
-
                 {isAuthenticated && (
                   <>
                     <Link

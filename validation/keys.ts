@@ -28,6 +28,7 @@ const validationKeys = {
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID inserido está inválido"),
   name: z
     .string()
+    .trim()
     .min(3, "Nome precisa ter no mínimo 3 caracteres.")
     .max(100, "Nome pode ter no máximo 100 caracteres.")
     .regex(/^[A-Za-zÀ-ÿ\s]+$/, "Nome não está em um formato válido.")

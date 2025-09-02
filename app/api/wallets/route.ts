@@ -1,26 +1,15 @@
+import validation from "@/validation";
 import credentials, {
   WalletPermissions,
 } from "@/lib/authorization/credentials";
-import controller from "@/middleware";
-import { AuthenticatedSession, FlowContext } from "@/middleware/flow";
-import validation from "@/validation";
-import { Wallet, WalletMember } from "@prisma/client";
-import { UnauthorizedError } from "nextfastapi/errors";
+import { authenticatedController } from "@/middleware";
+import { AuthenticatedContext } from "@/middleware/flow";
+import { Wallet } from "@prisma/client";
+import { ConflictError, ForbiddenError } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
 
-type AuthenticatedContext = FlowContext & AuthenticatedSession;
 type CreateWalletContext = AuthenticatedContext & {
   walletData: Partial<Wallet>;
-};
-
-const handleAuthentication: Middleware<FlowContext> = (req, _, next) => {
-  if (!req.context.session.user.canDo(credentials.wallet.CreateWallet)) {
-    throw new UnauthorizedError({
-      message: "Você não tem permissão para criar uma nova carteira.",
-    });
-  }
-
-  return next();
 };
 
 const handlePostValidation: Middleware<CreateWalletContext> = async (
@@ -28,6 +17,14 @@ const handlePostValidation: Middleware<CreateWalletContext> = async (
   _,
   next
 ) => {
+  const user = req.context.session.user;
+
+  if (!user.canDo(credentials.wallet.CreateWallet)) {
+    throw new ForbiddenError({
+      message: "Você não tem permissão para criar uma carteira.",
+    });
+  }
+
   const props = await req.json();
   const walletObject = await validation.wallet(
     {
@@ -38,34 +35,76 @@ const handlePostValidation: Middleware<CreateWalletContext> = async (
     props
   );
 
+  const walletExists = await database!.wallet.findFirst({
+    where: { createdById: user.id, name: walletObject.name },
+  });
+
+  if (walletExists) {
+    throw new ConflictError({
+      message: "Este nome já está sendo usado por você.",
+    });
+  }
+
   req.context.walletData = walletObject;
   return next();
 };
 
 const handlePost: Middleware<CreateWalletContext> = async (req) => {
   const { walletData } = req.context;
-
   const user = req.context.session.user;
 
-  const wallet = await database!.wallet.create({
-    data: { ...walletData, name: walletData.name! },
+  const walletObject = await database!.wallet.create({
+    data: { ...walletData, name: walletData.name!, createdById: user.id },
   });
 
-  const walletMember = await database?.walletMember.create({
+  const walletMember = await database!.walletMember.create({
     data: {
       permissions: WalletPermissions.walletMember.owner,
       userId: user.id,
-      walletId: wallet.id,
+      walletId: walletObject.id,
     },
   });
 
-  return Response.json({ wallet, walletMember }, { status: 201 });
+  const member = await validation.walletMember(
+    { joinedAt: true, permissions: true },
+    walletMember
+  );
+
+  const wallet = await validation.wallet(
+    {
+      id: true,
+      name: true,
+      color: false,
+      imageUrl: false,
+    },
+    walletObject
+  );
+
+  return Response.json({ member: { ...member, wallet } }, { status: 201 });
+};
+
+const handleGetValidation: Middleware<CreateWalletContext> = async (
+  req,
+  _,
+  next
+) => {
+  const user = req.context.session.user;
+
+  if (!user.canDo(credentials.wallet.ReadWalletList)) {
+    throw new ForbiddenError({
+      message: "Você não tem permissão para acessar a lista de carteiras.",
+    });
+  }
+
+  return next();
 };
 
 const handleGet: Middleware<AuthenticatedContext> = async (req) => {
+  const user = req.context.session.user;
+
   const walletsMember =
     (await database?.walletMember.findMany({
-      where: { userId: req.context.session.user.id },
+      where: { userId: user.id },
       include: { wallet: true },
     })) || [];
 
@@ -93,10 +132,9 @@ const handleGet: Middleware<AuthenticatedContext> = async (req) => {
   return Response.json(JSON.parse(JSON.stringify(output)));
 };
 
-controller
-  .use(handleAuthentication)
+authenticatedController
   .post(handlePostValidation, handlePost)
-  .get(handleGet);
+  .get(handleGetValidation, handleGet);
 
-export const GET = controller.expose();
-export const POST = controller.expose();
+export const GET = authenticatedController.expose();
+export const POST = authenticatedController.expose();

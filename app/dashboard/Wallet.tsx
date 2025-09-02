@@ -3,9 +3,9 @@ import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
 import { financialData } from "./financialData";
 import { Button } from "@/components/ui/button";
 
-export default function Wallet() {
+export default function Wallet({ className }: { className: string }) {
   return (
-    <DashboardCard title="CARTEIRA" icon={DollarSign}>
+    <DashboardCard title="CARTEIRA" icon={DollarSign} className={className}>
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-bold text-neutral-100 mb-1">Saldo</h2>
@@ -44,14 +44,6 @@ export default function Wallet() {
             </div>
           </div>
         </div>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 mt-3"
-        >
-          Extrato
-        </Button>
       </div>
     </DashboardCard>
   );

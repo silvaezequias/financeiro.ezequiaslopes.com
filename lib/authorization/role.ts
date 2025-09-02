@@ -5,7 +5,7 @@ class Role {
   constructor(public id: string, public credentials: Credentials[]) {}
 }
 
-const { user, session, wallet } = credendials;
+const { user, session, wallet, transaction } = credendials;
 
 export const AnonymousRole = new Role("anonymous", [session.CreateSession]);
 export const UserRole = new Role("user", [
@@ -13,11 +13,21 @@ export const UserRole = new Role("user", [
   user.UpdateUser,
   session.ReadSession,
   session.DeleteSession,
+
   wallet.CreateWallet,
   wallet.ReadWallet,
+  wallet.ReadWalletList,
+  wallet.DeleteWallet,
   wallet.LeaveWallet,
   wallet.UpdateWallet,
+
+  transaction.CreateTransaction,
+  transaction.ReadTransaction,
+  transaction.ReadTransactionList,
+  transaction.UpdateTransaction,
+  transaction.DeleteTransaction,
 ]);
+
 export const UserManagerRole = new Role("user_manager", [
   ...UserRole.credentials,
   user.CreateUser,

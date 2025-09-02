@@ -1,15 +1,20 @@
-import controller from "@/middleware";
-import { AuthenticatedSession, FlowContext } from "@/middleware/flow";
+import credentials from "@/lib/authorization/credentials";
+import { authenticatedController } from "@/middleware";
+import {
+  AuthenticatedContext,
+  AuthenticatedSession,
+  FlowContext,
+} from "@/middleware/flow";
 import validation from "@/validation";
 import { Wallet } from "@prisma/client";
-import { NotFoundError } from "nextfastapi/errors";
+import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
 
 type WalletParms = {
   walletId: string;
 };
 
-type WalletContext = FlowContext & {
+type WalletContext = AuthenticatedContext & {
   walletData: Pick<Wallet, "id">;
 };
 
@@ -18,6 +23,14 @@ const handleValidationGet: Middleware<WalletContext, WalletParms> = async (
   promiseParams,
   next
 ) => {
+  const user = req.context.session.user;
+
+  if (!user.canDo(credentials.wallet.ReadWallet)) {
+    throw new UnauthorizedError({
+      message: "Você não tem permissão para acessar a essa carteira.",
+    });
+  }
+
   const params = await (promiseParams as unknown as Promise<WalletParms>);
   const walletObject = await validation.wallet(
     { id: true },
@@ -29,10 +42,7 @@ const handleValidationGet: Middleware<WalletContext, WalletParms> = async (
   return next();
 };
 
-const handleGet: Middleware<WalletContext & AuthenticatedSession> = async (
-  req,
-  promiseParams
-) => {
+const handleGet: Middleware<WalletContext> = async (req) => {
   const user = req.context.session.user;
   const walletObject = req.context.walletData;
 
@@ -73,6 +83,44 @@ const handleGet: Middleware<WalletContext & AuthenticatedSession> = async (
   return Response.json({ member: { ...member, wallet } });
 };
 
-controller.get(handleValidationGet, handleGet);
+const handleDeleteValidation: Middleware<WalletContext> = (req, _, next) => {
+  const user = req.context.session.user;
 
-export const GET = controller.expose();
+  if (!user.canDo(credentials.wallet.DeleteWallet)) {
+    throw new UnauthorizedError({
+      message: "Você não tem permissão para deletar essa carteira.",
+    });
+  }
+
+  return next();
+};
+
+const handleDelete: Middleware<WalletContext, WalletParms> = async (
+  req,
+  params
+) => {
+  const user = req.context.session.user;
+
+  const walletMember = await database!.walletMember.findFirst({
+    where: {
+      userId: user.id,
+      walletId: params.walletId,
+    },
+    include: { wallet: true },
+  });
+
+  if (!walletMember || !walletMember.wallet) {
+    throw new NotFoundError({
+      message: "Essa carteira não foi encontrada.",
+    });
+  }
+
+  return Response.json({ params });
+};
+
+authenticatedController
+  .get(handleValidationGet, handleGet)
+  .delete(handleDeleteValidation, handleDelete);
+
+export const GET = authenticatedController.expose();
+export const DELETE = authenticatedController.expose();

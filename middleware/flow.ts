@@ -20,3 +20,4 @@ export type AuthenticatedSession = {
 
 export type PassportSession = AnonymousSession | AuthenticatedSession;
 export type FlowContext = PassportSession & Record<string, unknown>;
+export type AuthenticatedContext = FlowContext & AuthenticatedSession;

@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import brand from "@/lib/brand";
 import { Providers } from "./Providers";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: brand.brandName,
@@ -34,7 +35,17 @@ html {
         `}</style>
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster
+            expand
+            gap={4}
+            theme="dark"
+            position="top-center"
+            pauseWhenPageIsHidden
+            richColors
+          />
+        </Providers>
       </body>
     </html>
   );

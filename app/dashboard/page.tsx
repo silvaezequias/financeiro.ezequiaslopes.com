@@ -43,6 +43,7 @@ import MyCards from "./MyCards";
 import MonthlyTrend from "./MonthlyTrend";
 import ExpenseCategory from "./ExpenseCategory";
 import WeeklyExpenses from "./WeeklyExpenses";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
-    alert(
+    toast.warning(
       "Esta página está em desenvolvimento. As informações exibidas são apenas exemplos e não refletem dados reais."
     );
   }, []);
@@ -78,10 +79,8 @@ export default function DashboardPage() {
         <div className="mb-8">
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
             <div className="break-inside-avoid">
-              <Wallet />
-            </div>
-            <div className="break-inside-avoid">
-              <RecentTransactions />
+              <Wallet className="rounded-b-none" />
+              <RecentTransactions className="border-t-0 rounded-t-none" />
             </div>
             <div className="break-inside-avoid">
               <MyCards />

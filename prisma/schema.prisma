@@ -37,17 +37,21 @@ model WalletMember {
 }
 
 model Wallet {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  color    String?
-  imageUrl String?
-  currency String? @default("BRL")
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  color       String?
+  imageUrl    String?
+  currency    String? @default("BRL")
+  deleted     Boolean @default(false)
+  createdById String
 
   WalletMember   WalletMember[]
   Transaction    Transaction[]
   CreditCard     CreditCard[]
   WalletAuditLog WalletAuditLog[]
   WalletSummary  WalletSummary[]
+
+  @@unique([name, createdById])
 }
 
 model WalletSummary {

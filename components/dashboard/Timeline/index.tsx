@@ -69,7 +69,7 @@ export default function Timeline(props: TimelineProps) {
 
   return (
     <div
-      className={`bg-neutral-950/40 border border-neutral-900 rounded-lg p-4 w-full max-w-full ${props.className}`}
+      className={`bg-neutral-950/90 border border-neutral-900 rounded-lg p-4 w-full max-w-full ${props.className}`}
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
