@@ -91,7 +91,7 @@ export default function LogoutPage() {
                 variant="outline"
                 className="w-full border-neutral-700 bg-neutral-900/50 text-neutral-200 hover:bg-neutral-800"
               >
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <Link href="/carteiras" className="flex items-center gap-2">
                   <ArrowLeft className="h-4 w-4" />
                   Cancelar e voltar ao Dashboard
                 </Link>

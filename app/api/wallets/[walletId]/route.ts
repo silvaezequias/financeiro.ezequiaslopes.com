@@ -80,7 +80,7 @@ const handleGet: Middleware<WalletContext> = async (req) => {
     walletMember.wallet
   );
 
-  return Response.json({ member: { ...member, wallet } });
+  return Response.json({ wallet: { ...wallet, member } });
 };
 
 const handleDeleteValidation: Middleware<WalletContext> = (req, _, next) => {

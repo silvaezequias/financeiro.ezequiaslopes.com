@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen overflow-hidden bg-black text-neutral-200 flex flex-col justify-between">
       <SiteHeader />
-      <div className="mx-auto max-w-5xl">{children}</div>
+      <div className="mx-auto max-w-5xl w-full">{children}</div>
       <SiteFooter />
     </main>
   );
@@ -54,7 +54,7 @@ export function UnauthenticatedLayout({
   const { data: session, status } = useSession();
 
   if (session && status === "authenticated") {
-    router.push("/dashboard");
+    router.push("/carteiras");
     return null;
   }
 

@@ -111,11 +111,6 @@ const handleGet: Middleware<AuthenticatedContext> = async (req) => {
   const output = [];
 
   for (const walletMember of walletsMember) {
-    const member = await validation.walletMember(
-      { joinedAt: true, permissions: true },
-      walletMember
-    );
-
     const wallet = await validation.wallet(
       {
         id: true,
@@ -126,7 +121,7 @@ const handleGet: Middleware<AuthenticatedContext> = async (req) => {
       walletMember.wallet
     );
 
-    output.push({ member: { ...member, wallet } });
+    output.push({ ...wallet, balance: 0 });
   }
 
   return Response.json(JSON.parse(JSON.stringify(output)));

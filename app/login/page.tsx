@@ -38,7 +38,7 @@ export default function LoginPage() {
   const session = useSession();
 
   if (session.status === "authenticated") {
-    router.push("/dashboard");
+    router.push("/carteiras");
     return null;
   }
 
@@ -110,7 +110,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/carteiras");
     setIsLoading(false);
   };
 

@@ -5,65 +5,13 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Button } from "../ui/button";
-import {
-  ChevronDown,
-  Plus,
-  Wallet as WalletIcon,
-  Loader,
-  Loader2,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { Wallet, WalletMember } from "@prisma/client";
-import smartFetch from "@/lib/smartFetch";
-import { GetPayloadResult } from "@prisma/client/runtime/library";
+import { ChevronDown, Plus, Wallet as WalletIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import localDatabase from "@/lib/localDatabase";
-
-const mockWallets = [
-  {
-    id: 1,
-    name: "Carteira Principal",
-    balance: 2500.5,
-    color: "text-green-400",
-  },
-  { id: 2, name: "Poupança", balance: 15000.0, color: "text-blue-400" },
-  { id: 3, name: "Investimentos", balance: 8750.25, color: "text-purple-400" },
-  { id: 4, name: "Emergência", balance: 5000.0, color: "text-orange-400" },
-];
+import { useUserWallets } from "@/hooks/useUserWallets";
 
 export function WalletDropdownSelect() {
-  const [wallets, setWallets] = useState<Partial<Wallet>[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentWallet, setCurrentWallet] = useState<Wallet | null>();
-
-  async function getWallets() {
-    const updatedWallets: { member: WalletMember & { wallet: Wallet } }[] =
-      await smartFetch("/api/wallets/");
-
-    const firstWallet = updatedWallets[0].member.wallet;
-    const localCurrentWallet: Wallet = localDatabase.get("currentWallet");
-
-    let currentWallet = firstWallet;
-
-    if (localCurrentWallet) {
-      const current = updatedWallets.find(
-        (wallet) => wallet.member.wallet.id === localCurrentWallet.id
-      );
-
-      if (current) {
-        currentWallet = current.member.wallet;
-      }
-    } else {
-      localDatabase.set("currentWallet", firstWallet);
-    }
-
-    setCurrentWallet(currentWallet);
-    setWallets(updatedWallets.map((wM) => wM.member.wallet));
-  }
-
-  useEffect(() => {
-    getWallets();
-  }, []);
+  const { loading, currentWallet, setCurrentWallet, wallets } =
+    useUserWallets();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -85,14 +33,9 @@ export function WalletDropdownSelect() {
     return capitalizedText.join(" ");
   }
 
-  function onChangeWallet(walletId: string) {
-    const wallet = wallets.find((wallet) => wallet.id === walletId);
-
-    if (wallet) {
-      setCurrentWallet(wallet as Wallet);
-
-      localDatabase.set("currentWallet", wallet);
-    }
+  function handleWalletSelection(walletId: string) {
+    setCurrentWallet(walletId);
+    location.href = "/carteira/" + walletId;
   }
 
   return (
@@ -128,17 +71,17 @@ export function WalletDropdownSelect() {
         align="center"
       >
         <div className="p-2">
-          {isLoading && (
+          {loading && (
             <div className="flex justify-center mt-5">
               <Loader2 className="animate-spin w-7 h-7" />
             </div>
           )}
 
-          {!isLoading &&
+          {!loading &&
             (!!wallets.length ? (
               wallets.map((wallet) => (
                 <DropdownMenuItem
-                  onSelect={() => onChangeWallet(wallet.id!)}
+                  onSelect={() => handleWalletSelection(wallet.id!)}
                   key={wallet.id}
                   className="flex items-center justify-between p-3 overflow-hidden  w-full text-neutral-200 hover:bg-neutral-800 cursor-pointer rounded-md"
                 >
@@ -163,7 +106,7 @@ export function WalletDropdownSelect() {
             ))}
         </div>
         <div className="flex justify-center m-2">
-          <Link href="/carteiras/criar" className="w-full">
+          <Link href="/carteira/criar" className="w-full">
             <Button
               variant="default"
               className="bg-transparent hover:bg-neutral-800 cursor-pointer hover:text-neutral-100 w-full"

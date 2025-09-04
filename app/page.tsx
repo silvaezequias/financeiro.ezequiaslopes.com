@@ -39,7 +39,7 @@ export default function FinancePage() {
                 asChild
                 className="bg-amber-300 text-black hover:bg-amber-200"
               >
-                <Link href="/dashboard">Acessar Dashboard</Link>
+                <Link href="/carteiras">Acessar Dashboard</Link>
               </Button>{" "}
               <Button
                 asChild

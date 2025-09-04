@@ -129,7 +129,7 @@ export default function SiteHeader() {
                   asChild
                   className="text-neutral-200 hover:bg-neutral-800"
                 >
-                  <Link href="/dashboard">
+                  <Link href="/carteiras">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     Painel de Controle
                   </Link>
