@@ -15,9 +15,17 @@ function capitalizeText(text: string) {
   return capitalizedText.join(" ");
 }
 
+const formatCurrency = (value: number, currency: string = "BRL") => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency,
+  }).format(value / 100);
+};
+
 const formatter = {
   extract: { onlyNumbers },
   text: { capitalize: capitalizeText },
+  number: { currency: formatCurrency },
 };
 
 export default formatter;

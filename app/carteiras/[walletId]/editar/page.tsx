@@ -13,18 +13,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Wallet, Palette, Trash2 } from "lucide-react";
+import { ArrowLeft, Wallet as WalletIcon, Palette, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
+import { useUserWallets } from "@/hooks/useUserWallets";
+import { Wallet } from "@prisma/client";
+import formatter from "@/formatter";
 
 export default function EditWalletPage() {
   const params = useParams();
   const router = useRouter();
-  const walletId = params.id as string;
+  const walletId = params.walletId as string;
 
-  const [walletData, setWalletData] = useState({
+  const [walletData, setWalletData] = useState<Partial<Wallet>>({
     name: "",
     color: "#f59e0b",
     imageUrl: "",
@@ -32,48 +35,25 @@ export default function EditWalletPage() {
     balance: 0,
   });
 
-  const [isLoading, setIsLoading] = useState(true);
+  const { wallets } = useUserWallets();
 
-  const mockWallets = [
-    {
-      id: "1",
-      name: "Carteira Principal",
-      color: "#f59e0b",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 2500.0,
-    },
-    {
-      id: "2",
-      name: "Poupança",
-      color: "#10b981",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 15000.0,
-    },
-    {
-      id: "3",
-      name: "Investimentos",
-      color: "#8b5cf6",
-      imageUrl: "",
-      currency: "USD",
-      balance: 5000.0,
-    },
-  ];
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Simular carregamento dos dados da carteira
-    const wallet = mockWallets.find((w) => w.id === walletId);
+    if (wallets.length) {
+      const wallet = wallets.find((w) => w.id === walletId);
 
-    if (wallet) {
-      setWalletData(wallet);
-    } else {
-      // Redirecionar para página de carteira não encontrada
-      router.push("/carteira/not-found");
+      if (wallet) {
+        setWalletData(wallet);
+      } else {
+        // Redirecionar para página de carteira não encontrada
+        router.push("/carteiras/not-found");
+      }
+
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-  }, [walletId, router]);
+  }, [walletId, router, wallets]);
 
   const predefinedColors = [
     { name: "Âmbar", value: "#f59e0b", bg: "bg-amber-500" },
@@ -104,7 +84,7 @@ export default function EditWalletPage() {
     e.preventDefault();
     // TODO: Implementar lógica de atualização da carteira
     console.log("Carteira atualizada:", walletData);
-    router.push("/carteira");
+    router.push("/carteiras");
   };
 
   const handleDelete = () => {
@@ -115,7 +95,7 @@ export default function EditWalletPage() {
     ) {
       // TODO: Implementar lógica de exclusão da carteira
       console.log("Carteira excluída:", walletId);
-      router.push("/carteira");
+      router.push("/carteiras");
     }
   };
 
@@ -141,7 +121,7 @@ export default function EditWalletPage() {
           {/* Conteúdo Principal */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-4 mb-8">
-              <Link href="/carteira">
+              <Link href="/carteiras">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -182,7 +162,7 @@ export default function EditWalletPage() {
                   <div className="flex items-center gap-3">
                     <div
                       className="w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: walletData.color }}
+                      style={{ backgroundColor: walletData.color || "#aaa" }}
                     >
                       {walletData.imageUrl ? (
                         <img
@@ -191,7 +171,7 @@ export default function EditWalletPage() {
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
-                        <Wallet className="h-6 w-6 text-white" />
+                        <WalletIcon className="h-6 w-6 text-white" />
                       )}
                     </div>
                     <div>
@@ -203,11 +183,10 @@ export default function EditWalletPage() {
                           ?.name || "Real Brasileiro"}
                       </p>
                       <p className="text-amber-300 font-semibold">
-                        {currencies.find((c) => c.code === walletData.currency)
-                          ?.symbol || "R$"}{" "}
-                        {walletData.balance.toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}
+                        {formatter.number.currency(
+                          walletData.balance || 0,
+                          walletData.currency
+                        )}
                       </p>
                     </div>
                   </div>
@@ -219,7 +198,7 @@ export default function EditWalletPage() {
             <Card className="bg-neutral-950/40 border-neutral-900">
               <CardHeader>
                 <CardTitle className="text-amber-300 flex items-center gap-2">
-                  <Wallet className="h-5 w-5" />
+                  <WalletIcon className="h-5 w-5" />
                   DADOS DA CARTEIRA
                 </CardTitle>
               </CardHeader>
@@ -231,7 +210,7 @@ export default function EditWalletPage() {
                       Nome da Carteira *
                     </Label>
                     <div className="relative">
-                      <Wallet className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
+                      <WalletIcon className="absolute left-3 top-3 h-4 w-4 text-neutral-500" />
                       <Input
                         id="name"
                         type="text"
@@ -282,7 +261,7 @@ export default function EditWalletPage() {
                       <Palette className="h-4 w-4 text-neutral-500" />
                       <Input
                         type="color"
-                        value={walletData.color}
+                        value={walletData.color || "#aaa"}
                         onChange={(e) =>
                           handleInputChange("color", e.target.value)
                         }
@@ -304,7 +283,7 @@ export default function EditWalletPage() {
                       id="imageUrl"
                       type="url"
                       placeholder="https://exemplo.com/imagem.png"
-                      value={walletData.imageUrl}
+                      value={walletData.imageUrl || ""}
                       onChange={(e) =>
                         handleInputChange("imageUrl", e.target.value)
                       }
@@ -358,12 +337,12 @@ export default function EditWalletPage() {
                       className="flex-1 border-neutral-700 text-neutral-300 hover:bg-neutral-800 bg-transparent"
                       asChild
                     >
-                      <Link href="/carteira">Cancelar</Link>
+                      <Link href="/carteiras">Cancelar</Link>
                     </Button>
                     <Button
                       type="submit"
                       className="flex-1 bg-amber-300 hover:bg-amber-200 text-black font-medium"
-                      disabled={!walletData.name.trim()}
+                      disabled={!walletData.name?.trim()}
                     >
                       Salvar Alterações
                     </Button>
@@ -378,13 +357,13 @@ export default function EditWalletPage() {
               <Card className="bg-neutral-950/40 border-neutral-900">
                 <CardHeader>
                   <CardTitle className="text-amber-300 flex items-center gap-2 text-lg">
-                    <Wallet className="h-5 w-5" />
+                    <WalletIcon className="h-5 w-5" />
                     Suas Carteiras
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {mockWallets.length > 0 ? (
-                    mockWallets.map((wallet) => {
+                  {wallets.length > 0 ? (
+                    wallets.map((wallet) => {
                       const isCurrentWallet = wallet.id === walletId;
                       return (
                         <div
@@ -399,13 +378,13 @@ export default function EditWalletPage() {
                           `}
                           onClick={() => {
                             if (!isCurrentWallet) {
-                              router.push(`/carteira/${wallet.id}/editar`);
+                              router.push(`/carteiras/${wallet.id}/editar`);
                             }
                           }}
                         >
                           <div
                             className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: wallet.color }}
+                            style={{ backgroundColor: wallet.color || "#aaa" }}
                           >
                             {wallet.imageUrl ? (
                               <img
@@ -414,7 +393,7 @@ export default function EditWalletPage() {
                                 className="w-6 h-6 rounded-full object-cover"
                               />
                             ) : (
-                              <Wallet className="h-5 w-5 text-white" />
+                              <WalletIcon className="h-5 w-5 text-white" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -442,7 +421,7 @@ export default function EditWalletPage() {
                     })
                   ) : (
                     <div className="text-center py-8">
-                      <Wallet className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
+                      <WalletIcon className="h-12 w-12 text-neutral-600 mx-auto mb-3" />
                       <p className="text-neutral-500 text-sm">
                         Nenhuma carteira criada ainda
                       </p>

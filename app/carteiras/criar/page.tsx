@@ -16,12 +16,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Wallet, Palette } from "lucide-react";
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
 import smartFetch from "@/lib/smartFetch";
 import formatter from "@/formatter";
+import { useUserWallets } from "@/hooks/useUserWallets";
 
 export default function NewWalletPage() {
   const [walletData, setWalletData] = useState({
@@ -31,32 +30,7 @@ export default function NewWalletPage() {
     currency: "BRL",
   });
 
-  const existingWallets = [
-    {
-      id: "1",
-      name: "Carteira Principal",
-      color: "#f59e0b",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 2500.0,
-    },
-    {
-      id: "2",
-      name: "Poupança",
-      color: "#10b981",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 15000.0,
-    },
-    {
-      id: "3",
-      name: "Investimentos",
-      color: "#8b5cf6",
-      imageUrl: "",
-      currency: "USD",
-      balance: 5000.0,
-    },
-  ];
+  const { wallets } = useUserWallets();
 
   const predefinedColors = [
     { name: "Verde", value: "#10b981", bg: "bg-emerald-500" },
@@ -334,15 +308,15 @@ export default function NewWalletPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {existingWallets.length > 0 ? (
-                    existingWallets.map((wallet) => (
+                  {wallets.length > 0 ? (
+                    wallets.map((wallet) => (
                       <div
                         key={wallet.id}
                         className="flex items-center gap-3 p-3 rounded-lg bg-neutral-900/30 border border-neutral-800 hover:border-neutral-700 transition-colors"
                       >
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: wallet.color }}
+                          style={{ backgroundColor: wallet.color || "#aAa" }}
                         >
                           {wallet.imageUrl ? (
                             <img
@@ -359,11 +333,10 @@ export default function NewWalletPage() {
                             {wallet.name}
                           </h4>
                           <p className="text-amber-300 text-xs font-semibold">
-                            {currencies.find((c) => c.code === wallet.currency)
-                              ?.symbol || "R$"}{" "}
-                            {wallet.balance.toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                            })}
+                            {formatter.number.currency(
+                              wallet.balance,
+                              wallet.currency
+                            )}
                           </p>
                         </div>
                       </div>

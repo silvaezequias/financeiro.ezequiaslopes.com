@@ -102,6 +102,10 @@ const validationKeys = {
     .min(1, { message: "O dia da fatura deve estar entre 1 e 31" })
     .max(31, { message: "O dia da fatura deve estar entre 1 e 31" }),
   visibleTo: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/, "ID está inválido")),
+  currency: z.enum(["BRL", "USD", "EUR", "GBP", "JPY"]),
+  get balance() {
+    return this.amount;
+  },
   get walletId() {
     return this.id;
   },

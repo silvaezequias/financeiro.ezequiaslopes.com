@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, Plus, Edit, Trash2, DollarSign } from "lucide-react";
@@ -9,46 +9,7 @@ import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
 import Layout from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
-
-// Mock data para demonstração
-const mockWallets = [
-  {
-    id: "1",
-    name: "Carteira Principal",
-    color: "#f59e0b",
-    imageUrl: "",
-    currency: "BRL",
-    balance: 2500.75,
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "2",
-    name: "Poupança",
-    color: "#10b981",
-    imageUrl: "",
-    currency: "BRL",
-    balance: 15000.0,
-    createdAt: "2024-01-10",
-  },
-  {
-    id: "3",
-    name: "Investimentos",
-    color: "#8b5cf6",
-    imageUrl: "",
-    currency: "USD",
-    balance: 1250.3,
-    createdAt: "2024-01-05",
-  },
-  {
-    id: "4",
-    name: "Gastos Pessoais",
-    color: "#ec4899",
-    imageUrl: "",
-    currency: "BRL",
-    balance: 850.45,
-    createdAt: "2024-01-20",
-  },
-];
+import formatter from "@/formatter";
 
 const currencies = [
   { code: "BRL", name: "Real Brasileiro", symbol: "R$" },
@@ -61,21 +22,18 @@ const currencies = [
 export default function WalletsPage() {
   const { wallets } = useUserWallets();
 
-  const formatCurrency = (amount: number, currencyCode: string) => {
-    const currency = currencies.find((c) => c.code === currencyCode);
-    return `${currency?.symbol || "R$"} ${amount.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-    })}`;
-  };
-
   const handleDeleteWallet = (walletId: string) => {
     // TODO: Implementar lógica de exclusão
     console.log("Excluir carteira:", walletId);
   };
 
+  useEffect(() => {
+    console.log(wallets);
+  }, [wallets]);
+
   const totalBalance = wallets
     .filter((w) => w.currency === "BRL")
-    .reduce((sum, wallet) => sum + 0, 0);
+    .reduce((sum, wallet) => sum + wallet.balance, 0);
 
   return (
     <Layout>
@@ -107,7 +65,7 @@ export default function WalletsPage() {
         <Card className="bg-neutral-950/40 border-neutral-900 mb-8">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-amber-300 rounded-full flex items-center justify-center">
+              <div className="p-3 bg-amber-300 rounded-full flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-black" />
               </div>
               <div>
@@ -115,7 +73,7 @@ export default function WalletsPage() {
                   Saldo Total (BRL)
                 </h3>
                 <p className="text-2xl font-bold text-amber-300">
-                  {formatCurrency(totalBalance, "BRL")}
+                  {formatter.number.currency(totalBalance, "BRL")}
                 </p>
               </div>
               <div className="ml-auto text-right">
@@ -157,7 +115,7 @@ export default function WalletsPage() {
               <Link href={`/carteiras/${wallet.id}/`}>
                 <Card
                   key={wallet.id}
-                  className="bg-neutral-950/40 hover:shadow-amber-300/10 hover:scale-110 hover:shadow-xl transform hover:cursor-pointer transition-all border-amber-300/50 "
+                  className="bg-neutral-950/40 aspect-[3/2] justify-between hover:shadow-amber-300/10 hover:scale-110 hover:shadow-xl transform hover:cursor-pointer transition-all border-amber-300/50 "
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
@@ -193,9 +151,9 @@ export default function WalletsPage() {
                   <CardContent className="pt-0">
                     <div className="">
                       <p className="text-2xl font-bold text-amber-300">
-                        {formatCurrency(
-                          /* wallet.balance, wallet.currency*/ 0,
-                          "BRL"
+                        {formatter.number.currency(
+                          wallet.balance,
+                          wallet.currency
                         )}
                       </p>
                       <p className="text-neutral-500 text-xs">

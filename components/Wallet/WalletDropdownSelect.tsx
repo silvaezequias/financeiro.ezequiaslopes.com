@@ -8,17 +8,11 @@ import { Button } from "../ui/button";
 import { ChevronDown, Plus, Wallet as WalletIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useUserWallets } from "@/hooks/useUserWallets";
+import formatter from "@/formatter";
 
 export function WalletDropdownSelect() {
   const { loading, currentWallet, setCurrentWallet, wallets } =
     useUserWallets();
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   function capitalizeText(text: string) {
     if (!text) return "";
@@ -35,7 +29,7 @@ export function WalletDropdownSelect() {
 
   function handleWalletSelection(walletId: string) {
     setCurrentWallet(walletId);
-    location.href = "/carteira/" + walletId;
+    location.href = "/carteiras/" + walletId;
   }
 
   return (
@@ -57,7 +51,10 @@ export function WalletDropdownSelect() {
                 {capitalizeText(currentWallet.name)}
               </span>
               <span className="text-xs text-neutral-400">
-                {formatCurrency(0)}
+                {formatter.number.currency(
+                  currentWallet.balance,
+                  currentWallet.currency
+                )}
               </span>
               <ChevronDown className="h-3 w-3" />
             </>
@@ -67,7 +64,7 @@ export function WalletDropdownSelect() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-64 bg-neutral-900 border-neutral-700 rounded-2xl border"
+        className="w-80 bg-neutral-900 border-neutral-700 rounded-2xl border"
         align="center"
       >
         <div className="p-2">
@@ -85,16 +82,21 @@ export function WalletDropdownSelect() {
                   key={wallet.id}
                   className="flex items-center justify-between p-3 overflow-hidden  w-full text-neutral-200 hover:bg-neutral-800 cursor-pointer rounded-md"
                 >
-                  <div className="flex items-center gap-3 w-full ">
-                    <WalletIcon
-                      className={`h-4 w-4`}
-                      style={{ color: wallet.color || "#aaa" }}
-                    />
-                    <span className="font-medium text-sm overflow-hidden text-nowrap text-ellipsis w-[50%]">
-                      {capitalizeText(wallet.name!)}
+                  <div className="flex items-center gap-3 w-full justify-between ">
+                    <span className="flex items-center gap-3 w-[60%]">
+                      <WalletIcon
+                        className={`h-5 w-5`}
+                        style={{ color: wallet.color || "#aaa" }}
+                      />
+                      <span className="font-medium text-sm overflow-hidden text-nowrap text-ellipsis w-full">
+                        {capitalizeText(wallet.name!)}
+                      </span>
                     </span>
-                    <span className="text-sm text-neutral-400">
-                      {formatCurrency(0)}
+                    <span className="text-sm text-neutral-400 ">
+                      {formatter.number.currency(
+                        wallet.balance,
+                        wallet.currency
+                      )}
                     </span>
                   </div>
                 </DropdownMenuItem>
@@ -106,7 +108,7 @@ export function WalletDropdownSelect() {
             ))}
         </div>
         <div className="flex justify-center m-2">
-          <Link href="/carteira/criar" className="w-full">
+          <Link href="/carteiras/criar" className="w-full">
             <Button
               variant="default"
               className="bg-transparent hover:bg-neutral-800 cursor-pointer hover:text-neutral-100 w-full"

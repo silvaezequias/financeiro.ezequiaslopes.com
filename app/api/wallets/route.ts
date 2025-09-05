@@ -74,6 +74,7 @@ const handlePost: Middleware<CreateWalletContext> = async (req) => {
     {
       id: true,
       name: true,
+      currency: true,
       color: false,
       imageUrl: false,
     },
@@ -117,11 +118,14 @@ const handleGet: Middleware<AuthenticatedContext> = async (req) => {
         name: true,
         color: false,
         imageUrl: false,
+        balance: true,
+        currency: true,
+        createdAt: true,
       },
       walletMember.wallet
     );
 
-    output.push({ ...wallet, balance: 0 });
+    output.push({ ...wallet });
   }
 
   return Response.json(JSON.parse(JSON.stringify(output)));

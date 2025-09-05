@@ -43,7 +43,8 @@ model Wallet {
   name        String
   color       String?
   imageUrl    String?
-  currency    String? @default("BRL")
+  currency    String  @default("BRL")
+  balance     Float   @default(0)
   deleted     Boolean @default(false)
   createdById String
 
