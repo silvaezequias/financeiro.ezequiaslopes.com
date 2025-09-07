@@ -152,7 +152,6 @@ export default function EditWalletPage() {
               </Button>
             </div>
 
-            {/* Preview Card */}
             <div className="mb-8">
               <h2 className="text-lg font-semibold text-amber-300 mb-4">
                 Pré-visualização

@@ -2,6 +2,7 @@ import { RouteController } from "nextfastapi";
 import { AuthenticatedContext, FlowContext } from "./flow";
 import SessionInjector from "./injector/session";
 import { UnauthorizedError } from "nextfastapi/errors";
+import { locale } from "@/i18n";
 
 const controller = new RouteController<FlowContext>().use(SessionInjector);
 const authenticatedController = new RouteController<AuthenticatedContext>().use(
@@ -14,10 +15,15 @@ controller.onError((err, _, $, next) => {
   return next();
 });
 
-authenticatedController.use((req, _, next) => {
-  if (!req.context.session.user.id) {
+authenticatedController.use(({ context }, _, next) => {
+  const $ = locale(context.locale.lang);
+
+  if (!context.session.user.id) {
+    const { message, action } = $.api.user.cant.access;
+
     throw new UnauthorizedError({
-      message: "Você não tem permissão para executar essa ação.",
+      message,
+      action,
     });
   }
 

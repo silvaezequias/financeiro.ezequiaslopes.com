@@ -1,14 +1,12 @@
 import credentials from "@/lib/authorization/credentials";
 import { authenticatedController } from "@/middleware";
-import {
-  AuthenticatedContext,
-  AuthenticatedSession,
-  FlowContext,
-} from "@/middleware/flow";
+import { AuthenticatedContext } from "@/middleware/flow";
 import validation from "@/validation";
 import { Wallet } from "@prisma/client";
 import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
+import { handleDelete, handleDeleteValidation } from "./delete";
+import { database } from "@/lib/database";
 
 type WalletParms = {
   walletId: string;
@@ -81,41 +79,6 @@ const handleGet: Middleware<WalletContext> = async (req) => {
   );
 
   return Response.json({ wallet: { ...wallet, member } });
-};
-
-const handleDeleteValidation: Middleware<WalletContext> = (req, _, next) => {
-  const user = req.context.session.user;
-
-  if (!user.canDo(credentials.wallet.DeleteWallet)) {
-    throw new UnauthorizedError({
-      message: "Você não tem permissão para deletar essa carteira.",
-    });
-  }
-
-  return next();
-};
-
-const handleDelete: Middleware<WalletContext, WalletParms> = async (
-  req,
-  params
-) => {
-  const user = req.context.session.user;
-
-  const walletMember = await database!.walletMember.findFirst({
-    where: {
-      userId: user.id,
-      walletId: params.walletId,
-    },
-    include: { wallet: true },
-  });
-
-  if (!walletMember || !walletMember.wallet) {
-    throw new NotFoundError({
-      message: "Essa carteira não foi encontrada.",
-    });
-  }
-
-  return Response.json({ params });
 };
 
 authenticatedController

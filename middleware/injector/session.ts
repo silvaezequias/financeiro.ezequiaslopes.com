@@ -4,6 +4,7 @@ import { AnonymousRole, getRoleById, UserRole } from "@/lib/authorization/role";
 import { registerRequesterCredentials } from "@/lib/authorization/accessControl";
 import { FlowContext } from "../flow";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { database } from "@/lib/database";
 
 const SessionInjector: Middleware<FlowContext> = async (req, _, next) => {
   const session = await getServerSession(authOptions);
@@ -12,7 +13,7 @@ const SessionInjector: Middleware<FlowContext> = async (req, _, next) => {
   let requesterCredentialsManager = registerRequesterCredentials(AnonymousRole);
 
   if (session) {
-    const user = await database?.user.findUnique({
+    const user = await database.user.findUnique({
       where: { id: session.user.id },
     });
 
@@ -32,6 +33,7 @@ const SessionInjector: Middleware<FlowContext> = async (req, _, next) => {
   };
 
   req.context.session = sessionInContext;
+  req.context.locale = { lang: "pt-br" };
 
   return next();
 };

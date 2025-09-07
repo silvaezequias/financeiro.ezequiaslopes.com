@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 import { database } from "@/lib/database";
 import { controller } from "@/middleware";
 import { Middleware } from "nextfastapi/types";
 import { FlowContext } from "@/middleware/flow";
-import { BadRequestError } from "nextfastapi/errors";
+import { BadRequestError, UnauthorizedError } from "nextfastapi/errors";
 import { User } from "@prisma/client";
 import validation from "@/validation";
 import { UserRole } from "@/lib/authorization/role";
-import { flightRouterStateSchema } from "next/dist/server/app-render/types";
+import credentials from "@/lib/authorization/credentials";
+import { locale } from "@/i18n";
 
 type PostInputBody = {
   name: string;
@@ -28,6 +28,17 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
   _,
   next
 ) => {
+  const $ = locale(req.context.locale.lang);
+  const user = req.context.session.user;
+
+  if (!user.canDo(credentials.session.CreateSession)) {
+    const { message, action } = $.api.user.cant.access.userRegister;
+    throw new UnauthorizedError({
+      message,
+      action,
+    });
+  }
+
   const { confirmPassword, ...props } = (await req.json()) as PostInputBody;
 
   const userObject = await validation.user(
@@ -43,7 +54,8 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
   );
 
   if (userObject.password !== confirmPassword) {
-    throw new BadRequestError({ message: "As senhas não conferem." });
+    const { message, action } = $.validation.password.mismatch;
+    throw new BadRequestError({ message, action });
   }
 
   const existingUser = await database.user.findFirst({
@@ -51,8 +63,11 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
   });
 
   if (existingUser) {
+    const { message, action } = $.validation.email_cpf.exists;
+
     throw new BadRequestError({
-      message: "Já existe um cadastrado com esse CPF ou Email.",
+      message,
+      action,
     });
   }
 

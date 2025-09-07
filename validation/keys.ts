@@ -12,8 +12,8 @@ const validationKeys = {
       "CPF precisa estar em um formato válido"
     )
     .refine(async (doc) => {
-      const { valid, verified } = await validateCpf(doc);
-      return valid && verified;
+      const { valid } = await validateCpf(doc);
+      return valid;
     }, "CPF não existe ou não é válido."),
 
   phone: z
