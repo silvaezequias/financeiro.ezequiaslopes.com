@@ -48,7 +48,7 @@ export default function EditWalletPage() {
         setWalletData(wallet);
       } else {
         // Redirecionar para página de carteira não encontrada
-        router.push("/carteiras/404");
+        router.push("/carteiras/nao-encontrada");
       }
 
       setIsLoading(false);

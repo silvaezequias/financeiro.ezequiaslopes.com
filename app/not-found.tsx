@@ -18,7 +18,7 @@ export default function NotFound() {
           <p
             className={`${jetmono.className} text-[11px] uppercase tracking-widest text-neutral-500`}
           >
-            Erro 404
+            Erro nao-encontrada
           </p>
           <h1
             className={`${garamond.className} mt-3 text-5xl sm:text-7xl leading-tight text-neutral-100`}

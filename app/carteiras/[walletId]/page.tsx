@@ -17,10 +17,10 @@ import {
 import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import PeriodDetails from "@/components/dashboard/Timeline/period-details";
-import { AuthenticatedLayout } from "@/components/Layout";
+import Layout, { AuthenticatedLayout } from "@/components/Layout";
 import Timeline from "@/components/dashboard/Timeline";
 import { isAdmin } from "../../../components/dashboard/financialData";
-import Wallet from "../../../components/dashboard/Wallet";
+import WalletComponent from "../../../components/dashboard/Wallet";
 import RecentTransactions from "../../../components/dashboard/RecentTransactions";
 import MyCards from "../../../components/dashboard/MyCards";
 import MonthlyTrend from "../../../components/dashboard/MonthlyTrend";
@@ -28,6 +28,7 @@ import ExpenseCategory from "../../../components/dashboard/ExpenseCategory";
 import WeeklyExpenses from "../../../components/dashboard/WeeklyExpenses";
 import { toast } from "sonner";
 import { useUserWallets } from "@/hooks/useUserWallets";
+import { Wallet } from "@prisma/client";
 
 type DashboardParams = {
   walletId: string;
@@ -36,7 +37,10 @@ type DashboardParams = {
 export default function DashboardPage() {
   const params = useParams<DashboardParams>();
   const router = useRouter();
+  const walletId = params.walletId;
   const [isFabOpen, setIsFabOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [walletData, setWalletData] = useState<Wallet>();
   const [selectedPeriod, setSelectedPeriod] = useState<{
     type: "day" | "month" | "year";
     date: Date;
@@ -50,18 +54,18 @@ export default function DashboardPage() {
     setSelectedPeriod(period);
   };
 
-  const { data: session, status } = useSession();
-
-  if (status === "unauthenticated") {
-    unauthorized();
-    return null;
-  }
-
   useEffect(() => {
-    if (wallets.length && !wallets.find((w) => w.id === params.walletId)) {
-      router.push("/carteiras/404");
+    if (wallets.length) {
+      const wallet = wallets.find((w) => w.id === walletId);
+
+      if (wallet) {
+        setIsLoading(false);
+        setWalletData(wallet);
+      } else {
+        router.push("/carteiras/nao-encontrada");
+      }
     }
-  }, [wallets]);
+  }, [walletId, wallets]);
 
   useEffect(() => {
     toast.warning(
@@ -69,13 +73,31 @@ export default function DashboardPage() {
     );
   }, []);
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-300 mx-auto mb-4"></div>
+              <p className="text-neutral-400">Carregando carteira...</p>
+            </div>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
   return (
     <AuthenticatedLayout>
       <section className="mx-auto w-screen max-w-full sm:px-6 pt-8 pb-12 ">
         <div className="mb-8">
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
             <div className="break-inside-avoid">
-              <Wallet className="rounded-b-none" />
+              <WalletComponent
+                className="rounded-b-none"
+                wallet={walletData!}
+              />
               <RecentTransactions className="border-t-0 rounded-t-none" />
             </div>
             <div className="break-inside-avoid">

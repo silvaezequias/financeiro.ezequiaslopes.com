@@ -260,7 +260,7 @@ export default function DeleteWalletPage() {
     if (wallet) {
       setWalletData(wallet);
     } else {
-      router.push("/carteiras/404");
+      router.push("/carteiras/nao-encontrada");
     }
 
     setIsLoading(false);

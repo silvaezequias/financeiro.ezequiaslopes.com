@@ -2,8 +2,14 @@ import DashboardCard from "@/components/dashboard/dashboard-card";
 import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
 import { financialData } from "./financialData";
 import { Button } from "@/components/ui/button";
+import { Wallet } from "@prisma/client";
 
-export default function Wallet({ className }: { className: string }) {
+type WalletProps = {
+  className?: string;
+  wallet: Wallet;
+};
+
+export default function WalletComponent({ className, wallet }: WalletProps) {
   return (
     <DashboardCard title="CARTEIRA" icon={DollarSign} className={className}>
       <div className="space-y-4">
@@ -11,7 +17,7 @@ export default function Wallet({ className }: { className: string }) {
           <h2 className="text-lg font-bold text-neutral-100 mb-1">Saldo</h2>
           <div className="text-2xl font-bold text-amber-300">
             R${" "}
-            {financialData.balance.toLocaleString("pt-BR", {
+            {wallet.balance.toLocaleString("pt-BR", {
               minimumFractionDigits: 2,
             })}
           </div>
