@@ -18,7 +18,7 @@ import { useParams, useRouter } from "next/navigation";
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import Layout, { AuthenticatedLayout } from "@/components/Layout";
 
 export default function DeleteWalletPage() {
   const params = useParams();
@@ -260,7 +260,7 @@ export default function DeleteWalletPage() {
     if (wallet) {
       setWalletData(wallet);
     } else {
-      router.push("/carteiras/not-found");
+      router.push("/carteiras/404");
     }
 
     setIsLoading(false);
@@ -268,7 +268,7 @@ export default function DeleteWalletPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AuthenticatedLayout>
         <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -277,15 +277,14 @@ export default function DeleteWalletPage() {
             </div>
           </div>
         </section>
-      </Layout>
+      </AuthenticatedLayout>
     );
   }
 
   const currentStepData = steps[currentStep];
 
   return (
-    <main className="min-h-screen bg-black text-neutral-200">
-      <SiteHeader />
+    <AuthenticatedLayout>
       <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
         <div className="flex items-center gap-4 mb-8">
           <Link href={`/carteiras/${walletId}/editar`}>
@@ -396,7 +395,6 @@ export default function DeleteWalletPage() {
           <CardContent>{currentStepData.content}</CardContent>
         </Card>
       </section>
-      <SiteFooter />
-    </main>
+    </AuthenticatedLayout>
   );
 }

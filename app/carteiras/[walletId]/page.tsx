@@ -2,56 +2,46 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { unauthorized, useRouter } from "next/navigation";
+import { unauthorized, useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Shield,
-  DollarSign,
   CreditCardIcon,
   Receipt,
   Calendar,
-  ArrowUpRight,
-  ArrowDownRight,
   Plus,
   X,
-  ChevronLeft,
-  ChevronRight,
   TrendingUp,
-  PieChart,
-  BarChart3,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  Pie as RechartsPie,
-  Cell,
-  BarChart,
-  Bar,
-} from "recharts";
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import PeriodDetails from "@/components/dashboard/Timeline/period-details";
-import Layout, { AuthenticatedLayout } from "@/components/Layout";
+import { AuthenticatedLayout } from "@/components/Layout";
 import Timeline from "@/components/dashboard/Timeline";
-import { isAdmin } from "./financialData";
-import Wallet from "./Wallet";
-import RecentTransactions from "./RecentTransactions";
-import MyCards from "./MyCards";
-import MonthlyTrend from "./MonthlyTrend";
-import ExpenseCategory from "./ExpenseCategory";
-import WeeklyExpenses from "./WeeklyExpenses";
+import { isAdmin } from "../../../components/dashboard/financialData";
+import Wallet from "../../../components/dashboard/Wallet";
+import RecentTransactions from "../../../components/dashboard/RecentTransactions";
+import MyCards from "../../../components/dashboard/MyCards";
+import MonthlyTrend from "../../../components/dashboard/MonthlyTrend";
+import ExpenseCategory from "../../../components/dashboard/ExpenseCategory";
+import WeeklyExpenses from "../../../components/dashboard/WeeklyExpenses";
 import { toast } from "sonner";
+import { useUserWallets } from "@/hooks/useUserWallets";
+
+type DashboardParams = {
+  walletId: string;
+};
 
 export default function DashboardPage() {
+  const params = useParams<DashboardParams>();
   const router = useRouter();
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<{
     type: "day" | "month" | "year";
     date: Date;
   } | null>(null);
+  const { wallets } = useUserWallets();
 
   const handlePeriodSelect = (period: {
     type: "day" | "month" | "year";
@@ -66,6 +56,12 @@ export default function DashboardPage() {
     unauthorized();
     return null;
   }
+
+  useEffect(() => {
+    if (wallets.length && !wallets.find((w) => w.id === params.walletId)) {
+      router.push("/carteiras/404");
+    }
+  }, [wallets]);
 
   useEffect(() => {
     toast.warning(

@@ -1,7 +1,7 @@
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import { PieChart as PieCharIcon } from "lucide-react";
 import { ResponsiveContainer, Pie, Cell, PieChart, Tooltip } from "recharts";
-import { expenseCategories } from "./financialData";
+import { expenseCategories } from ".//financialData";
 import { jetmono } from "@/lib/fonts";
 
 function CustomTooltip({ active, payload }: any) {

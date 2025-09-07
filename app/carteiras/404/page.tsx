@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { ArrowLeft, Wallet } from "lucide-react";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { garamond, jetmono } from "@/lib/fonts";
+import Layout from "@/components/Layout";
 
 export default function WalletNotFound() {
   return (
-    <main className="min-h-screen bg-black text-neutral-200">
-      <SiteHeader />
+    <Layout>
       <section className="mx-auto max-w-3xl px-4 sm:px-6 pt-32 pb-32">
         <div className="text-center">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-300/10 ring-1 ring-amber-300/30 mb-6">
@@ -85,7 +83,6 @@ export default function WalletNotFound() {
           </div>
         </div>
       </section>
-      <SiteFooter />
-    </main>
+    </Layout>
   );
 }

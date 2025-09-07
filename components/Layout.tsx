@@ -38,7 +38,7 @@ export function AuthenticatedLayout({
           message="Verificando autenticação..."
         />
       ) : (
-        <div className="mx-auto max-w-5xl">{children}</div>
+        <div className="mx-auto max-w-5xl w-full">{children}</div>
       )}
       <SiteFooter />
     </main>
@@ -64,7 +64,7 @@ export function UnauthenticatedLayout({
       {status === "loading" ? (
         <LoadingOverlay isVisible={true} message="Analisando conexão..." />
       ) : (
-        <div className="mx-auto max-w-5xl">{children}</div>
+        <div className="mx-auto max-w-5xl w-full">{children}</div>
       )}
       <SiteFooter />
     </main>

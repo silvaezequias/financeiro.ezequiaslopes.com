@@ -17,7 +17,7 @@ import { ArrowLeft, Wallet as WalletIcon, Palette, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { AuthenticatedLayout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import { Wallet } from "@prisma/client";
 import formatter from "@/formatter";
@@ -48,7 +48,7 @@ export default function EditWalletPage() {
         setWalletData(wallet);
       } else {
         // Redirecionar para página de carteira não encontrada
-        router.push("/carteiras/not-found");
+        router.push("/carteiras/404");
       }
 
       setIsLoading(false);
@@ -101,7 +101,7 @@ export default function EditWalletPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AuthenticatedLayout>
         <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -110,12 +110,12 @@ export default function EditWalletPage() {
             </div>
           </div>
         </section>
-      </Layout>
+      </AuthenticatedLayout>
     );
   }
 
   return (
-    <Layout>
+    <AuthenticatedLayout>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Conteúdo Principal */}
@@ -432,6 +432,6 @@ export default function EditWalletPage() {
           </div>
         </div>
       </section>{" "}
-    </Layout>
+    </AuthenticatedLayout>
   );
 }

@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Wallet, Palette } from "lucide-react";
 import Link from "next/link";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { AuthenticatedLayout } from "@/components/Layout";
 import smartFetch from "@/lib/smartFetch";
 import formatter from "@/formatter";
 import { useUserWallets } from "@/hooks/useUserWallets";
@@ -74,7 +74,7 @@ export default function NewWalletPage() {
   };
 
   return (
-    <Layout>
+    <AuthenticatedLayout>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Conteúdo Principal */}
@@ -355,6 +355,6 @@ export default function NewWalletPage() {
           </div>
         </div>
       </section>
-    </Layout>
+    </AuthenticatedLayout>
   );
 }

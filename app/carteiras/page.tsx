@@ -4,10 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, Plus, Edit, Trash2, DollarSign } from "lucide-react";
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { AuthenticatedLayout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import formatter from "@/formatter";
 
@@ -36,7 +34,7 @@ export default function WalletsPage() {
     .reduce((sum, wallet) => sum + wallet.balance, 0);
 
   return (
-    <Layout>
+    <AuthenticatedLayout>
       <section className="pt-16 px-5 pb-24">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -168,6 +166,6 @@ export default function WalletsPage() {
           </div>
         )}
       </section>{" "}
-    </Layout>
+    </AuthenticatedLayout>
   );
 }
