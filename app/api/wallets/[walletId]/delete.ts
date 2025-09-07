@@ -37,15 +37,14 @@ export const handleDeleteValidation: Middleware<DeleteContext> = async (
 };
 
 export const handleDelete: Middleware<DeleteContext, DeleteParams> = async (
-  req,
-  params
+  req
 ) => {
   const user = req.context.session.user;
 
   const walletMember = await database!.walletMember.findFirst({
     where: {
       userId: user.id,
-      walletId: params.walletId,
+      walletId: req.context.walletId,
       wallet: { deleted: false },
     },
     include: { wallet: true },

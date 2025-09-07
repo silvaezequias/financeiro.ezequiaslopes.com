@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ArrowLeft,
-  Wallet,
+  WalletIcon,
   AlertTriangle,
   Users,
   CreditCard,
@@ -15,30 +15,36 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
-import Layout, { AuthenticatedLayout } from "@/components/Layout";
+import { AuthenticatedLayout } from "@/components/Layout";
+import { useUserWallets } from "@/hooks/useUserWallets";
+import { GetWallets } from "@/types/wallet";
+import formatter from "@/formatter";
+import smartFetch from "@/lib/smartFetch";
 
 export default function DeleteWalletPage() {
   const params = useParams();
   const router = useRouter();
   const walletId = params.walletId as string;
 
-  const [walletData, setWalletData] = useState({
+  const [walletData, setWalletData] = useState<Partial<GetWallets>>({
     name: "",
     color: "#f59e0b",
     imageUrl: "",
     currency: "BRL",
     balance: 0,
-    transactionCount: 0,
-    sharedUsers: [] as string[],
+    stats: {
+      transactions: 0,
+      members: 1,
+      creditCards: 0,
+    },
   });
 
   const [currentStep, setCurrentStep] = useState(0);
   const [confirmationText, setConfirmationText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { wallets } = useUserWallets();
 
   const mockWallets = [
     {
@@ -84,11 +90,13 @@ export default function DeleteWalletPage() {
 
     setIsDeleting(true);
 
-    // Simular processo de exclusão
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    const response = await smartFetch(`/api/wallets/${walletId}/`, {
+      method: "DELETE",
+    });
 
-    console.log("Carteira excluída:", walletId);
-    router.push("/carteiras");
+    if ("deleted" in response) {
+      router.push("/carteiras");
+    }
   };
 
   const steps = [
@@ -134,7 +142,7 @@ export default function DeleteWalletPage() {
         <div>
           <div className="bg-orange-950/30 border border-orange-900/50 rounded-lg p-4 mb-6">
             <p className="text-orange-300 font-semibold mb-2">
-              {walletData.transactionCount} transações serão permanentemente
+              {walletData.stats?.transactions} transações serão permanentemente
               excluídas
             </p>
             <p className="text-neutral-300 text-sm">
@@ -154,7 +162,7 @@ export default function DeleteWalletPage() {
     },
   ];
 
-  if (walletData.sharedUsers.length > 0) {
+  if (walletData.stats?.members! > 1) {
     steps.push({
       id: "users",
       title: "USUÁRIOS AFETADOS",
@@ -166,11 +174,11 @@ export default function DeleteWalletPage() {
         <div>
           <div className="bg-purple-950/30 border border-purple-900/50 rounded-lg p-4 mb-6">
             <p className="text-purple-300 font-semibold mb-3">
-              {walletData.sharedUsers.length} usuários perderão acesso a esta
-              carteira:
+              {walletData.stats?.members} usuários perderão acesso a esta
+              carteira
             </p>
             <div className="space-y-2 mb-4">
-              {walletData.sharedUsers.map((user, index) => (
+              {/* {walletData.sharedUsers.map((user, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-2 text-neutral-300"
@@ -178,11 +186,10 @@ export default function DeleteWalletPage() {
                   <Users className="h-4 w-4 text-purple-400" />
                   <span>{user}</span>
                 </div>
-              ))}
+              ))} */}
             </div>
             <p className="text-neutral-400 text-sm">
-              Estes usuários não poderão mais acessar esta carteira, suas
-              transações ou relatórios.
+              Deseja realmente continuar?
             </p>
           </div>
           <Button
@@ -255,16 +262,18 @@ export default function DeleteWalletPage() {
   });
 
   useEffect(() => {
-    const wallet = mockWallets.find((w) => w.id === walletId);
+    if (wallets.length) {
+      const wallet = wallets.find((w) => w.id === walletId);
 
-    if (wallet) {
-      setWalletData(wallet);
-    } else {
-      router.push("/carteiras/nao-encontrada");
+      if (wallet) {
+        setWalletData(wallet);
+      } else {
+        router.push("/carteiras/nao-encontrada");
+      }
+
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-  }, [walletId, router]);
+  }, [walletId, wallets]);
 
   if (isLoading) {
     return (
@@ -307,7 +316,7 @@ export default function DeleteWalletPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mb-8">
+        <div className="flex items-center justify-center gap-2 mb-8">
           {steps.map((_, index) => (
             <div key={index} className="flex items-center">
               <div
@@ -337,7 +346,7 @@ export default function DeleteWalletPage() {
         </div>
 
         {/* Carteira a ser excluída */}
-        <Card className="bg-red-950/20 border-red-900/50 mb-8">
+        <Card className="bg-neutral-950/90 border-neutral-800/50 rounded-xl max-w-full mb-8">
           <CardHeader>
             <CardTitle className="text-red-400 flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
@@ -348,7 +357,7 @@ export default function DeleteWalletPage() {
             <div className="flex items-center gap-4">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: walletData.color }}
+                style={{ backgroundColor: walletData.color || "#aaa" }}
               >
                 {walletData.imageUrl ? (
                   <img
@@ -357,7 +366,7 @@ export default function DeleteWalletPage() {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 ) : (
-                  <Wallet className="h-8 w-8 text-white" />
+                  <WalletIcon className="h-8 w-8 text-white" />
                 )}
               </div>
               <div>
@@ -368,13 +377,10 @@ export default function DeleteWalletPage() {
                   {currencies.find((c) => c.code === walletData.currency)?.name}
                 </p>
                 <p className="text-amber-300 font-bold text-lg">
-                  {
-                    currencies.find((c) => c.code === walletData.currency)
-                      ?.symbol
-                  }
-                  {walletData.balance.toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                  })}
+                  {formatter.number.currency(
+                    walletData.balance!,
+                    walletData.currency!
+                  )}
                 </p>
               </div>
             </div>
@@ -382,7 +388,7 @@ export default function DeleteWalletPage() {
         </Card>
 
         <Card
-          className={`${currentStepData.bgColor} ${currentStepData.borderColor} border`}
+          className={`bg-neutral-950/90 border-neutral-800/50 rounded-xl max-w-full  border`}
         >
           <CardHeader>
             <CardTitle

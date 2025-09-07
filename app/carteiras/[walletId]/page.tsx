@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { unauthorized, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Shield,
@@ -28,7 +27,6 @@ import ExpenseCategory from "../../../components/dashboard/ExpenseCategory";
 import WeeklyExpenses from "../../../components/dashboard/WeeklyExpenses";
 import { toast } from "sonner";
 import { useUserWallets } from "@/hooks/useUserWallets";
-import { Wallet } from "@prisma/client";
 
 type DashboardParams = {
   walletId: string;

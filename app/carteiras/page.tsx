@@ -8,6 +8,7 @@ import { garamond } from "@/lib/fonts";
 import { AuthenticatedLayout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import formatter from "@/formatter";
+import { useRouter } from "next/navigation";
 
 const currencies = [
   { code: "BRL", name: "Real Brasileiro", symbol: "R$" },
@@ -19,6 +20,7 @@ const currencies = [
 
 export default function WalletsPage() {
   const { wallets } = useUserWallets();
+  const router = useRouter();
 
   const handleDeleteWallet = (walletId: string) => {
     // TODO: Implementar lógica de exclusão
@@ -32,6 +34,14 @@ export default function WalletsPage() {
   const totalBalance = wallets
     .filter((w) => w.currency === "BRL")
     .reduce((sum, wallet) => sum + wallet.balance, 0);
+
+  const handleOpenWallet = (walletId: string) => {
+    router.push(`/carteiras/${walletId}/`);
+  };
+
+  const handleEditWallet = (walletId: string) => {
+    router.push(`/carteiras/${walletId}/editar`);
+  };
 
   return (
     <AuthenticatedLayout>
@@ -110,12 +120,12 @@ export default function WalletsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {wallets.map((wallet) => (
-              <Link href={`/carteiras/${wallet.id}/`}>
-                <Card
-                  key={wallet.id}
-                  className="bg-neutral-950/40 aspect-[3/2] justify-between hover:shadow-amber-300/10 hover:scale-110 hover:shadow-xl transform hover:cursor-pointer transition-all border-amber-300/50 "
-                >
-                  <CardHeader className="pb-3">
+              <Card
+                key={wallet.id}
+                className="bg-neutral-950/40 aspect-[3/2] justify-between hover:shadow-amber-300/10 hover:scale-110 hover:shadow-xl transform hover:cursor-pointer transition-all border-amber-300/50 "
+              >
+                <CardHeader className="pb-3">
+                  <label htmlFor={`wallet_${wallet.id}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div
@@ -145,23 +155,40 @@ export default function WalletsPage() {
                         </div>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="">
-                      <p className="text-2xl font-bold text-amber-300">
-                        {formatter.number.currency(
-                          wallet.balance,
-                          wallet.currency
-                        )}
-                      </p>
-                      <p className="text-neutral-500 text-xs">
-                        Criada em{" "}
-                        {new Date(wallet.createdAt).toLocaleDateString("pt-BR")}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </label>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <label htmlFor={`wallet_${wallet.id}`}>
+                    <p className="text-2xl font-bold text-amber-300">
+                      {formatter.number.currency(
+                        wallet.balance,
+                        wallet.currency
+                      )}
+                    </p>
+                    <p className="text-neutral-500 text-xs">
+                      Criada em{" "}
+                      {new Date(wallet.createdAt).toLocaleDateString("pt-BR")}
+                    </p>
+                  </label>
+                  <div className="flex max-w-full gap-2">
+                    <Button
+                      id={`wallet_${wallet.id}`}
+                      variant={"default"}
+                      onClick={() => handleOpenWallet(wallet.id)}
+                      className="flex-4 mt-3 text-neutral-500 hover:bg-neutral-700 hover:text-neutral-300"
+                    >
+                      Abrir Carteira
+                    </Button>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() => handleEditWallet(wallet.id)}
+                      className="flex-1 mt-3 text-neutral-500 hover:bg-neutral-900 hover:text-neutral-300"
+                    >
+                      <Edit />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}

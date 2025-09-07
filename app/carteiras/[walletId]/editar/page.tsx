@@ -40,14 +40,12 @@ export default function EditWalletPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simular carregamento dos dados da carteira
     if (wallets.length) {
       const wallet = wallets.find((w) => w.id === walletId);
 
       if (wallet) {
         setWalletData(wallet);
       } else {
-        // Redirecionar para página de carteira não encontrada
         router.push("/carteiras/nao-encontrada");
       }
 
@@ -82,21 +80,12 @@ export default function EditWalletPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementar lógica de atualização da carteira
     console.log("Carteira atualizada:", walletData);
     router.push("/carteiras");
   };
 
   const handleDelete = () => {
-    if (
-      confirm(
-        "Tem certeza que deseja excluir esta carteira? Esta ação não pode ser desfeita."
-      )
-    ) {
-      // TODO: Implementar lógica de exclusão da carteira
-      console.log("Carteira excluída:", walletId);
-      router.push("/carteiras");
-    }
+    router.push(`/carteiras/${walletData.id}/deletar`);
   };
 
   if (isLoading) {
@@ -407,12 +396,10 @@ export default function EditWalletPage() {
                               )}
                             </div>
                             <p className="text-amber-300 text-xs font-semibold">
-                              {currencies.find(
-                                (c) => c.code === wallet.currency
-                              )?.symbol || "R$"}{" "}
-                              {wallet.balance.toLocaleString("pt-BR", {
-                                minimumFractionDigits: 2,
-                              })}
+                              {formatter.number.currency(
+                                wallet.balance,
+                                wallet.currency
+                              )}
                             </p>
                           </div>
                         </div>
