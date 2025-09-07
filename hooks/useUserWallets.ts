@@ -5,7 +5,7 @@ import localDatabase from "@/lib/localDatabase";
 import { toast } from "sonner";
 import formatter from "@/formatter";
 
-export function useUserWallets() {
+export function useUserWallets(): UserWallets {
   const [wallets, setWallets] = useState<Wallet[]>([]);
   const [currentWallet, setCurrentWallet] = useState<Wallet | null>(null);
   const [loading, setLoading] = useState(false);
@@ -55,8 +55,15 @@ export function useUserWallets() {
 
   return {
     wallets,
-    currentWallet,
+    currentWallet: currentWallet as Wallet,
     setCurrentWallet: handleSetCurrentWallet,
     loading,
   };
 }
+
+export type UserWallets = {
+  wallets: Wallet[];
+  currentWallet: Wallet;
+  setCurrentWallet: (walletId: Wallet["id"]) => void;
+  loading: boolean;
+};

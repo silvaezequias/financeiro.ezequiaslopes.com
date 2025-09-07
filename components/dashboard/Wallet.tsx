@@ -3,23 +3,38 @@ import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
 import { financialData } from "./financialData";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "@prisma/client";
+import formatter from "@/formatter";
+import { UserWallets } from "@/hooks/useUserWallets";
 
 type WalletProps = {
   className?: string;
-  wallet: Wallet;
+  userWallets: UserWallets;
 };
 
-export default function WalletComponent({ className, wallet }: WalletProps) {
+export default function WalletComponent({
+  className,
+  userWallets,
+}: WalletProps) {
+  const { loading, currentWallet: wallet } = userWallets;
+
+  if (loading || !wallet) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-300 mx-auto mb-4"></div>
+          <p className="text-neutral-400">Carregando carteira...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <DashboardCard title="CARTEIRA" icon={DollarSign} className={className}>
       <div className="space-y-4">
         <div>
           <h2 className="text-lg font-bold text-neutral-100 mb-1">Saldo</h2>
           <div className="text-2xl font-bold text-amber-300">
-            R${" "}
-            {wallet.balance.toLocaleString("pt-BR", {
-              minimumFractionDigits: 2,
-            })}
+            {formatter.number.currency(wallet.balance, wallet.currency)}
           </div>
         </div>
 

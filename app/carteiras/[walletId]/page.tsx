@@ -40,12 +40,12 @@ export default function DashboardPage() {
   const walletId = params.walletId;
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [walletData, setWalletData] = useState<Wallet>();
+
   const [selectedPeriod, setSelectedPeriod] = useState<{
     type: "day" | "month" | "year";
     date: Date;
   } | null>(null);
-  const { wallets } = useUserWallets();
+  const userWallets = useUserWallets();
 
   const handlePeriodSelect = (period: {
     type: "day" | "month" | "year";
@@ -55,17 +55,16 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (wallets.length) {
-      const wallet = wallets.find((w) => w.id === walletId);
+    if (userWallets.wallets.length) {
+      const wallet = userWallets.wallets.find((w) => w.id === walletId);
 
       if (wallet) {
         setIsLoading(false);
-        setWalletData(wallet);
       } else {
         router.push("/carteiras/nao-encontrada");
       }
     }
-  }, [walletId, wallets]);
+  }, [walletId, userWallets.wallets]);
 
   useEffect(() => {
     toast.warning(
@@ -95,8 +94,8 @@ export default function DashboardPage() {
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
             <div className="break-inside-avoid">
               <WalletComponent
+                userWallets={userWallets}
                 className="rounded-b-none"
-                wallet={walletData!}
               />
               <RecentTransactions className="border-t-0 rounded-t-none" />
             </div>
