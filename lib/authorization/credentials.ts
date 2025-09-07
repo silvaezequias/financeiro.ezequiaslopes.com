@@ -35,6 +35,12 @@ enum WalletCredential {
   LeaveWallet = "leave:wallet",
 }
 
+enum WalletSummaryCredential {
+  ReadWalletSummary = "read:wallet_summary",
+  ReadWalletSummaryList = "read:wallet_summary:list",
+  ReadWalletSummaryOther = "read:wallet_summary:other",
+}
+
 enum TransactionCredential {
   CreateTransaction = "create:transaction",
   ReadTransaction = "read:transaction",
@@ -52,19 +58,23 @@ const credentials = {
   user: UserCredential,
   wallet: WalletCredential,
   transaction: TransactionCredential,
+  walletSummary: WalletSummaryCredential,
 };
 
 export default credentials;
+
 export type Credentials =
   | AuthorizationCodeCredential
   | SessionCredential
   | UserCredential
   | WalletCredential
-  | TransactionCredential;
+  | TransactionCredential
+  | WalletSummaryCredential;
 
 const GuestWalletMemberRoles = [
   WalletCredential.ReadWallet,
   WalletCredential.LeaveWallet,
+  WalletSummaryCredential.ReadWalletSummaryList,
   TransactionCredential.ReadTransaction,
   TransactionCredential.ReadTransactionList,
   TransactionCredential.DeleteTransactionOther,
@@ -73,6 +83,7 @@ const GuestWalletMemberRoles = [
 const OwnerWalletMemberRoles = [
   ...GuestWalletMemberRoles,
   WalletCredential.UpdateWallet,
+  WalletSummaryCredential.ReadWalletSummary,
 ];
 
 export const WalletPermissions = {

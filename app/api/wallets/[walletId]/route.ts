@@ -44,7 +44,7 @@ const handleGet: Middleware<WalletContext> = async (req) => {
   const user = req.context.session.user;
   const walletObject = req.context.walletData;
 
-  const walletMember = await database!.walletMember.findUnique({
+  const walletMember = await database.walletMember.findUnique({
     where: {
       userId_walletId: {
         userId: user.id,

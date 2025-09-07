@@ -5,6 +5,7 @@ import {
   Wallet,
   WalletAuditLog,
   WalletMember,
+  WalletSummary,
 } from "@prisma/client";
 import { BadRequestError } from "nextfastapi/errors";
 import validationKeys, { KOValidationKeys } from "./keys";
@@ -17,6 +18,7 @@ const validation = {
   user: validate<User>,
   wallet: validate<Wallet>,
   walletMember: validate<WalletMember>,
+  walletSummary: validate<WalletSummary>,
   walletAuditLog: validate<WalletAuditLog>,
   transaction: validate<Transaction>,
   creditCard: validate<CreditCard>,

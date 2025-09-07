@@ -1,6 +1,6 @@
 import { authenticatedController } from "@/middleware";
-import { handleGet, handleGetValidation } from "./(main)/get";
-import { handlePost, handlePostValidation } from "./(main)/post";
+import { handleGet, handleGetValidation } from "./get";
+import { handlePost, handlePostValidation } from "./post";
 
 authenticatedController
   .post(handlePostValidation, handlePost)

@@ -36,7 +36,7 @@ export const handlePostValidation: Middleware<CreateWalletContext> = async (
     props
   );
 
-  const walletExists = await database!.wallet.findFirst({
+  const walletExists = await database.wallet.findFirst({
     where: { createdById: user.id, name: walletObject.name },
   });
 
@@ -54,11 +54,11 @@ export const handlePost: Middleware<CreateWalletContext> = async (req) => {
   const { walletData } = req.context;
   const user = req.context.session.user;
 
-  const walletObject = await database!.wallet.create({
+  const walletObject = await database.wallet.create({
     data: { ...walletData, name: walletData.name!, createdById: user.id },
   });
 
-  const walletMember = await database!.walletMember.create({
+  const walletMember = await database.walletMember.create({
     data: {
       permissions: WalletPermissions.walletMember.owner,
       userId: user.id,
