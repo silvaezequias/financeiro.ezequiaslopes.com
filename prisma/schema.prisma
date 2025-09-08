@@ -66,7 +66,7 @@ model WalletSummary {
   walletId String @db.ObjectId
 
   year    Int
-  month   Int
+  month   Int?
   balance Float
   income  Float
   expense Float

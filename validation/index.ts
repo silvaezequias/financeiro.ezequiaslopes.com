@@ -18,13 +18,13 @@ const validation = {
   user: validate<User>,
   wallet: validate<Wallet>,
   walletMember: validate<WalletMember>,
-  walletSummary: validate<WalletSummary>,
+  walletSummary: validate<WalletSummary & { toYear: number; toMonth: number }>,
   walletAuditLog: validate<WalletAuditLog>,
   transaction: validate<Transaction>,
   creditCard: validate<CreditCard>,
 };
 
-async function validate<Model>(
+function validate<Model>(
   requiredKeys: Bool<Model>,
   data: Partial<Model>,
   lang: keyof typeof locales = "pt-br"
@@ -51,9 +51,9 @@ async function validate<Model>(
     if (key in validationKeys && key in filteredInput) {
       try {
         if (filteredInput[key as keyof Model] || value) {
-          const validated = await validationKeys[
-            key as KOValidationKeys
-          ]?.parseAsync(filteredInput[key as keyof Model]);
+          const validated = validationKeys[key as KOValidationKeys]?.parse(
+            filteredInput[key as keyof Model]
+          );
 
           filteredInput[key as keyof Model] = validated as typeof validated &
             undefined;

@@ -1,19 +1,20 @@
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import { ArrowDownRight, ArrowUpRight, DollarSign } from "lucide-react";
 import { financialData } from "./financialData";
-import { Button } from "@/components/ui/button";
-import { Wallet } from "@prisma/client";
+import { WalletSummary } from "@prisma/client";
 import formatter from "@/formatter";
 import { UserWallets } from "@/hooks/useUserWallets";
 
 type WalletProps = {
   className?: string;
   userWallets: UserWallets;
+  summary: WalletSummary;
 };
 
 export default function WalletComponent({
   className,
   userWallets,
+  summary,
 }: WalletProps) {
   const { loading, currentWallet: wallet } = userWallets;
 
