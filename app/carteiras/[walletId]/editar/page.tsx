@@ -17,10 +17,11 @@ import { ArrowLeft, Wallet as WalletIcon, Palette, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { garamond } from "@/lib/fonts";
-import { AuthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import { Wallet } from "@prisma/client";
 import formatter from "@/formatter";
+import Image from "next/image";
 
 export default function EditWalletPage() {
   const params = useParams();
@@ -90,7 +91,7 @@ export default function EditWalletPage() {
 
   if (isLoading) {
     return (
-      <AuthenticatedLayout>
+      <Layout>
         <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -99,12 +100,12 @@ export default function EditWalletPage() {
             </div>
           </div>
         </section>
-      </AuthenticatedLayout>
+      </Layout>
     );
   }
 
   return (
-    <AuthenticatedLayout>
+    <Layout>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Conteúdo Principal */}
@@ -153,7 +154,7 @@ export default function EditWalletPage() {
                       style={{ backgroundColor: walletData.color || "#aaa" }}
                     >
                       {walletData.imageUrl ? (
-                        <img
+                        <Image
                           src={walletData.imageUrl || "/placeholder.svg"}
                           alt="Wallet icon"
                           className="w-8 h-8 rounded-full object-cover"
@@ -375,7 +376,7 @@ export default function EditWalletPage() {
                             style={{ backgroundColor: wallet.color || "#aaa" }}
                           >
                             {wallet.imageUrl ? (
-                              <img
+                              <Image
                                 src={wallet.imageUrl || "/placeholder.svg"}
                                 alt="Wallet icon"
                                 className="w-6 h-6 rounded-full object-cover"
@@ -419,6 +420,6 @@ export default function EditWalletPage() {
           </div>
         </div>
       </section>{" "}
-    </AuthenticatedLayout>
+    </Layout>
   );
 }

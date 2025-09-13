@@ -2,16 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
-import {
-  Menu,
-  X,
-  User,
-  LogOut,
-  Wallet,
-  ChevronDown,
-  LayoutDashboard,
-} from "lucide-react";
+import { signOut, SessionContextValue } from "next-auth/react";
+import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -26,14 +18,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { garamond, jetmono } from "@/lib/fonts";
 import brand from "@/lib/brand";
 import { WalletDropdownSelect } from "./Wallet/WalletDropdownSelect";
 
-export default function SiteHeader() {
+type SessionOptions = {
+  session?: SessionContextValue;
+};
+
+export default function SiteHeader(props: SessionOptions) {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { data: session, status } = props.session || {};
   const isAuthenticated = status === "authenticated";
   const user = session?.user;
 

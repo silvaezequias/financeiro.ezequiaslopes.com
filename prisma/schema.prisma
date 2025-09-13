@@ -60,21 +60,24 @@ model Wallet {
   @@unique([name, createdById])
 }
 
+type Month {
+  income  Int @default(0)
+  expense Int @default(0)
+  balance Int @default(0)
+}
+
 model WalletSummary {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   wallet   Wallet @relation(fields: [walletId], references: [id])
   walletId String @db.ObjectId
 
-  year    Int
-  month   Int?
-  balance Float
-  income  Float
-  expense Float
+  year   Int
+  months Json
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
-  @@index([walletId, year, month])
+  @@index([walletId, year])
 }
 
 model WalletAuditLog {

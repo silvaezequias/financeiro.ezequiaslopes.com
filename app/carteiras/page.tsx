@@ -1,14 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Wallet, Plus, Edit, Trash2, DollarSign } from "lucide-react";
+import { Wallet, Plus, Edit, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { garamond } from "@/lib/fonts";
-import { AuthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import formatter from "@/formatter";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const currencies = [
   { code: "BRL", name: "Real Brasileiro", symbol: "R$" },
@@ -21,11 +22,6 @@ const currencies = [
 export default function WalletsPage() {
   const { wallets } = useUserWallets();
   const router = useRouter();
-
-  const handleDeleteWallet = (walletId: string) => {
-    // TODO: Implementar lógica de exclusão
-    console.log("Excluir carteira:", walletId);
-  };
 
   useEffect(() => {
     console.log(wallets);
@@ -44,7 +40,7 @@ export default function WalletsPage() {
   };
 
   return (
-    <AuthenticatedLayout>
+    <Layout noAuthBehavior="redirect" redirectUrl="/login">
       <section className="pt-16 px-5 pb-24">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -133,7 +129,7 @@ export default function WalletsPage() {
                           style={{ backgroundColor: wallet.color || "#aAa" }}
                         >
                           {wallet.imageUrl ? (
-                            <img
+                            <Image
                               src={wallet.imageUrl || "/placeholder.svg"}
                               alt="Wallet icon"
                               className="w-6 h-6 rounded-full object-cover"
@@ -193,6 +189,6 @@ export default function WalletsPage() {
           </div>
         )}
       </section>{" "}
-    </AuthenticatedLayout>
+    </Layout>
   );
 }

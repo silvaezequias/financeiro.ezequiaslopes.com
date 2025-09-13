@@ -1,4 +1,3 @@
-import { AnonymousSession } from "@/middleware/flow";
 import credendials, { Credentials } from "./credentials";
 
 class Role {

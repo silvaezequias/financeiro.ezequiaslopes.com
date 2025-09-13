@@ -17,10 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Wallet, Palette } from "lucide-react";
 import Link from "next/link";
 import { garamond } from "@/lib/fonts";
-import { AuthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import smartFetch from "@/lib/smartFetch";
 import formatter from "@/formatter";
 import { useUserWallets } from "@/hooks/useUserWallets";
+import Image from "next/image";
 
 export default function NewWalletPage() {
   const [walletData, setWalletData] = useState({
@@ -74,7 +75,7 @@ export default function NewWalletPage() {
   };
 
   return (
-    <AuthenticatedLayout>
+    <Layout>
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Conteúdo Principal */}
@@ -116,7 +117,7 @@ export default function NewWalletPage() {
                       style={{ backgroundColor: walletData.color }}
                     >
                       {walletData.imageUrl ? (
-                        <img
+                        <Image
                           src={walletData.imageUrl || "/placeholder.svg"}
                           alt="Wallet icon"
                           className="w-8 h-8 rounded-full object-cover"
@@ -319,7 +320,7 @@ export default function NewWalletPage() {
                           style={{ backgroundColor: wallet.color || "#aAa" }}
                         >
                           {wallet.imageUrl ? (
-                            <img
+                            <Image
                               src={wallet.imageUrl || "/placeholder.svg"}
                               alt="Wallet icon"
                               className="w-6 h-6 rounded-full object-cover"
@@ -355,6 +356,6 @@ export default function NewWalletPage() {
           </div>
         </div>
       </section>
-    </AuthenticatedLayout>
+    </Layout>
   );
 }

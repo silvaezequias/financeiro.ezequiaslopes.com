@@ -3,8 +3,8 @@ import { toast } from "sonner";
 
 export default async function smartFetch(
   url: string,
-  options?: RequestInit,
-  onError?: (err: any) => void
+  options?: RequestInit
+  // onError?: (err: any) => void
 ) {
   try {
     const response = await fetch(url, options);

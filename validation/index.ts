@@ -18,7 +18,9 @@ const validation = {
   user: validate<User>,
   wallet: validate<Wallet>,
   walletMember: validate<WalletMember>,
-  walletSummary: validate<WalletSummary & { toYear: number; toMonth: number }>,
+  walletSummary: validate<
+    WalletSummary & { toYear: number; toMonth: number; isPlaceholder: boolean }
+  >,
   walletAuditLog: validate<WalletAuditLog>,
   transaction: validate<Transaction>,
   creditCard: validate<CreditCard>,
@@ -41,10 +43,7 @@ function validate<Model>(
     if (value) {
       if (!(key in filteredInput)) {
         const { message, action } = $.validation.missingRequiredKeys;
-        throw new BadRequestError({
-          message,
-          action,
-        });
+        throw new BadRequestError({ message, action });
       }
     }
 
@@ -64,7 +63,7 @@ function validate<Model>(
         if (err instanceof Error) message = err.message;
         if (err instanceof ZodError) message = err.errors[0].message;
 
-        throw new BadRequestError({ message });
+        throw new BadRequestError({ message, action: key });
       }
     }
   }

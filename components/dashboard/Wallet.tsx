@@ -8,13 +8,12 @@ import { UserWallets } from "@/hooks/useUserWallets";
 type WalletProps = {
   className?: string;
   userWallets: UserWallets;
-  summary: WalletSummary;
+  summary?: WalletSummary;
 };
 
 export default function WalletComponent({
   className,
   userWallets,
-  summary,
 }: WalletProps) {
   const { loading, currentWallet: wallet } = userWallets;
 

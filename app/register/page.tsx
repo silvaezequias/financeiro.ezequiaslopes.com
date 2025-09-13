@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { ErrorModal } from "@/components/error-modal";
 import { useRouter } from "next/navigation";
 import { validatePassword } from "@/lib/validatePassword";
@@ -141,8 +141,12 @@ export default function RegisterPage() {
     );
   };
 
+  const handleAuthenticated = () => {
+    return router.push("/carteiras");
+  };
+
   return (
-    <Layout>
+    <Layout noAuthBehavior="none" handleAuthenticated={handleAuthenticated}>
       <ErrorModal
         isOpen={!!modalErrorMessage}
         message={modalErrorMessage}

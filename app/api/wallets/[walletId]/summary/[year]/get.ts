@@ -8,7 +8,6 @@ import {
 } from "nextfastapi/errors";
 import { Middleware } from "nextfastapi/types";
 import { database } from "@/lib/database";
-import dayjs from "dayjs";
 import { WalletSummary } from "@prisma/client";
 
 type SummaryContext = AuthenticatedContext & {
@@ -36,6 +35,8 @@ export const handleGetValidation: Middleware<
 
   const { searchParams } = new URL(req.url);
 
+  const MAX_YEAR_RANGE = 20;
+
   const {
     id: walletId,
     year,
@@ -53,6 +54,12 @@ export const handleGetValidation: Middleware<
     if (toYear < year!) {
       throw new BadRequestError({
         message: "Range de anos não pode ser negativo.",
+      });
+    }
+
+    if (toYear - year! > MAX_YEAR_RANGE) {
+      throw new BadRequestError({
+        message: `Range de anos não pode exceder ${MAX_YEAR_RANGE}.`,
       });
     }
   }
@@ -85,10 +92,10 @@ export const handleGet: Middleware<SummaryContext> = async (req) => {
   const year = req.context.year;
   const toYear = req.context.toYear || year;
 
-  const startOfYear = dayjs(`${year}-0-01`).startOf("year").toDate();
-  const endOfYear = dayjs(`${toYear}-11-01`).endOf("year").toDate();
+  // const startOfYear = dayjs(`${year}-0-01`).startOf("year").toDate();
+  // const endOfYear = dayjs(`${toYear}-11-01`).endOf("year").toDate();
 
-  let summary = await database.walletSummary.findMany({
+  const summary = await database.walletSummary.findMany({
     where: {
       walletId: req.context.walletId,
       year: {
@@ -104,15 +111,18 @@ export const handleGet: Middleware<SummaryContext> = async (req) => {
     });
 
     if (!currentSummary) {
-      const lastBalance = summary.find((s) => s.year === year + i - 1)?.balance;
+      const lastBalance =
+        summary.find((s) => s.year === year + i - 1)?.balance || 0;
 
       summary.push({
         year: year + i,
         balance: lastBalance,
         income: 0,
         expense: 0,
-        updatedAt: new Date(),
-      } as WalletSummary);
+        isPlaceholder: true,
+      } as WalletSummary & {
+        isPlaceholder: boolean;
+      });
     }
   }
 
@@ -142,13 +152,21 @@ export const handleGet: Middleware<SummaryContext> = async (req) => {
           balance: true,
           expense: true,
           income: true,
-          updatedAt: true,
+          updatedAt: false,
           year: true,
+          isPlaceholder: false,
         },
         yearSummary
       )
     )
-    .sort((a, b) => a.year! - b.year!);
+    .sort((a, b) => a.year! - b.year!)
+    .map((yearSummary) => {
+      return {
+        ...yearSummary,
+        updatedAt: yearSummary.updatedAt || null,
+        isPlaceholder: !!(yearSummary as any).isPlaceholder,
+      };
+    });
 
   return Response.json(output);
 };

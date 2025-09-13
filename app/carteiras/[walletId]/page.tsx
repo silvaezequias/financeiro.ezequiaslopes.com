@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import PeriodDetails from "@/components/dashboard/Timeline/period-details";
-import Layout, { AuthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import Timeline from "@/components/dashboard/Timeline";
 import { isAdmin } from "../../../components/dashboard/financialData";
 import WalletComponent from "../../../components/dashboard/Wallet";
@@ -62,7 +62,7 @@ export default function DashboardPage() {
         router.push("/carteiras/nao-encontrada");
       }
     }
-  }, [walletId, userWallets.wallets]);
+  }, [walletId, userWallets.wallets, router]);
 
   useEffect(() => {
     toast.warning(
@@ -86,7 +86,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <AuthenticatedLayout>
+    <Layout>
       <section className="mx-auto w-screen max-w-full sm:px-6 pt-8 pb-12 ">
         <div className="mb-8">
           <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
@@ -216,6 +216,6 @@ export default function DashboardPage() {
           </Button>
         </div>
       </section>
-    </AuthenticatedLayout>
+    </Layout>
   );
 }

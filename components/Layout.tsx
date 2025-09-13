@@ -2,71 +2,70 @@
 
 import SiteHeader from "@/components/site-header";
 import SiteFooter from "@/components/site-footer";
-import { useSession } from "next-auth/react";
+import { SessionContextValue, useSession } from "next-auth/react";
 import { LoadingOverlay } from "./loading-overlay";
-import { se } from "date-fns/locale";
 import { unauthorized, useRouter } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+type NoAuthBehaviors = "none" | "redirect" | "forbidden";
+
+type LayoutProps = {
+  children: React.ReactNode;
+  waitForAuth?: boolean;
+  handleAuthenticated?: (session: SessionContextValue) => void;
+} & (
+  | { noAuthBehavior?: "redirect"; redirectUrl: string }
+  | {
+      noAuthBehavior?: Exclude<NoAuthBehaviors, "redirect">;
+      redirectUrl?: never;
+    }
+);
+
+function LayoutContainer({ children }: LayoutProps) {
   return (
     <main className="min-h-screen overflow-hidden bg-black text-neutral-200 flex flex-col justify-between">
-      <SiteHeader />
-      <div className="mx-auto max-w-5xl w-full">{children}</div>
-      <SiteFooter />
+      {children}
     </main>
   );
 }
 
-export function AuthenticatedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { data: session, status } = useSession();
-
-  if (!session && status === "unauthenticated") {
-    unauthorized();
-    return null;
-  }
-
-  return (
-    <main className="min-h-screen overflow-hidden bg-black text-neutral-200 flex flex-col justify-between">
-      <SiteHeader />
-      {status === "loading" ? (
-        <LoadingOverlay
-          isVisible={true}
-          message="Verificando autenticação..."
-        />
-      ) : (
-        <div className="mx-auto max-w-5xl w-full">{children}</div>
-      )}
-      <SiteFooter />
-    </main>
-  );
-}
-
-export function UnauthenticatedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function Layout(props: LayoutProps) {
+  const session = useSession();
   const router = useRouter();
-  const { data: session, status } = useSession();
 
-  if (session && status === "authenticated") {
-    router.push("/carteiras");
-    return null;
+  let waitForAuth = true;
+
+  "waitForAuth" in props && (waitForAuth = !!props.waitForAuth!);
+
+  if (waitForAuth && session.status === "loading") {
+    return (
+      <LayoutContainer>
+        <LoadingOverlay isVisible message="Aguarde verificação..." />
+      </LayoutContainer>
+    );
+  }
+
+  if (!session.data && session.status === "unauthenticated") {
+    if (props.noAuthBehavior) {
+      if (props.noAuthBehavior !== "none") {
+        if (props.noAuthBehavior === "forbidden") unauthorized();
+        if (props.noAuthBehavior === "redirect") router.push(props.redirectUrl);
+
+        return <LayoutContainer children />;
+      }
+    } else if (waitForAuth) {
+      router.push("/login");
+    }
+  }
+
+  if (session.status === "authenticated") {
+    props.handleAuthenticated?.(session);
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-black text-neutral-200 flex flex-col justify-between">
-      <SiteHeader />
-      {status === "loading" ? (
-        <LoadingOverlay isVisible={true} message="Analisando conexão..." />
-      ) : (
-        <div className="mx-auto max-w-5xl w-full">{children}</div>
-      )}
+    <LayoutContainer>
+      <SiteHeader session={session} />
+      <div className="mx-auto max-w-5xl w-full">{props.children}</div>
       <SiteFooter />
-    </main>
+    </LayoutContainer>
   );
 }

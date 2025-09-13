@@ -92,7 +92,19 @@ const handlePost: Middleware<UserRegisterContext> = async (req) => {
     },
   });
 
-  return Response.json(userData, { status: 201 });
+  const output = validation.user(
+    {
+      birthDate: true,
+      cpf: true,
+      email: true,
+      name: true,
+      phone: true,
+      createdAt: true,
+    },
+    createdUser
+  );
+
+  return Response.json(output, { status: 201 });
 };
 
 controller.post(handlePostValidation, handlePost);

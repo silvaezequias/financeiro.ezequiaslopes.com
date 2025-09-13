@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Layout";
+
 export default function LogoutPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session, status } = useSession();
   const router = useRouter();
   const user = {} as {
     name?: string;
@@ -38,13 +39,8 @@ export default function LogoutPage() {
     }
   };
 
-  if (status === "unauthenticated" && !session) {
-    router.push("/login");
-    return null;
-  }
-
   return (
-    <Layout>
+    <Layout noAuthBehavior="redirect" redirectUrl="/login">
       <section className="mx-auto max-w-md px-4 sm:px-6 pt-16 pb-24">
         <div className="text-center mb-8">
           <h1

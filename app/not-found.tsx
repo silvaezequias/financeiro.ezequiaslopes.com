@@ -4,11 +4,11 @@ import Link from "next/link";
 import { ArrowLeft, Home, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { garamond, jetmono } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 
 export default function NotFound() {
   return (
-    <Layout>
+    <Layout waitForAuth={false}>
       <section className="mx-auto max-w-3xl px-4 sm:px-6 pt-32 pb-32">
         <div className="text-center">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-300/10 ring-1 ring-amber-300/30 mb-6">

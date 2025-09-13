@@ -17,7 +17,7 @@ export function WalletDropdownSelect() {
   function capitalizeText(text: string) {
     if (!text) return "";
 
-    let capitalizedText: string[] = [];
+    const capitalizedText: string[] = [];
     const splittedText = text.split(" ");
 
     splittedText.forEach((token) => {
@@ -28,8 +28,34 @@ export function WalletDropdownSelect() {
   }
 
   function handleWalletSelection(walletId: string) {
+    if (currentWallet.id === walletId) return;
+
     setCurrentWallet(walletId);
     location.href = "/carteiras/" + walletId;
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <Button disabled variant="default" className="bg-transparentw-full">
+          Carregando carteiras...
+        </Button>
+      </div>
+    );
+  }
+
+  if (!currentWallet) {
+    return (
+      <Link href="/carteiras/criar" className="w-full">
+        <Button
+          variant="default"
+          className="hover:bg-neutral-800 cursor-pointer hover:text-neutral-100 w-full"
+        >
+          <Plus className="w-1.5 h-1.5" />
+          Criar Carteira
+        </Button>
+      </Link>
+    );
   }
 
   return (
@@ -39,28 +65,22 @@ export function WalletDropdownSelect() {
           variant="default"
           className="flex items-center gap-2 px-3 py-2 h-auto text-neutral-200 hover:text-amber-300 hover:bg-neutral-800/50"
         >
-          {currentWallet ? (
-            <>
-              <WalletIcon
-                className={`h-4 w-4`}
-                style={{
-                  color: currentWallet.color || "#aaa",
-                }}
-              />
-              <span className="text-sm font-medium">
-                {capitalizeText(currentWallet.name)}
-              </span>
-              <span className="text-xs text-neutral-400">
-                {formatter.number.currency(
-                  currentWallet.balance,
-                  currentWallet.currency
-                )}
-              </span>
-              <ChevronDown className="h-3 w-3" />
-            </>
-          ) : (
-            <span>Carregando carteiras...</span>
-          )}
+          <WalletIcon
+            className={`h-4 w-4`}
+            style={{
+              color: currentWallet.color || "#aaa",
+            }}
+          />
+          <span className="text-sm font-medium">
+            {capitalizeText(currentWallet.name)}
+          </span>
+          <span className="text-xs text-neutral-400">
+            {formatter.number.currency(
+              currentWallet.balance,
+              currentWallet.currency
+            )}
+          </span>
+          <ChevronDown className="h-3 w-3" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

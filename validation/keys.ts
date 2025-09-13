@@ -112,6 +112,7 @@ const validationKeys = {
     .max(11, { message: "Insira um mês válido" })
     .min(0, { message: "Insira um mês válido" }),
 
+  isPlaceholder: z.boolean(),
   get toYear() {
     return this.year;
   },

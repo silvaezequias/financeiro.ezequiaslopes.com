@@ -16,11 +16,12 @@ import {
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { garamond } from "@/lib/fonts";
-import { AuthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import { GetWallets } from "@/types/wallet";
 import formatter from "@/formatter";
 import smartFetch from "@/lib/smartFetch";
+import Image from "next/image";
 
 export default function DeleteWalletPage() {
   const params = useParams();
@@ -45,39 +46,6 @@ export default function DeleteWalletPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const { wallets } = useUserWallets();
-
-  const mockWallets = [
-    {
-      id: "1",
-      name: "Carteira Principal",
-      color: "#f59e0b",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 2500.0,
-      transactionCount: 45,
-      sharedUsers: ["João Silva", "Maria Santos"],
-    },
-    {
-      id: "2",
-      name: "Poupança",
-      color: "#10b981",
-      imageUrl: "",
-      currency: "BRL",
-      balance: 15000.0,
-      transactionCount: 12,
-      sharedUsers: [],
-    },
-    {
-      id: "3",
-      name: "Investimentos",
-      color: "#8b5cf6",
-      imageUrl: "",
-      currency: "USD",
-      balance: 5000.0,
-      transactionCount: 78,
-      sharedUsers: ["Ana Costa", "Pedro Lima", "Carlos Oliveira"],
-    },
-  ];
 
   const currencies = [
     { code: "BRL", name: "Real Brasileiro", symbol: "R$" },
@@ -273,11 +241,11 @@ export default function DeleteWalletPage() {
 
       setIsLoading(false);
     }
-  }, [walletId, wallets]);
+  }, [walletId, wallets, router]);
 
   if (isLoading) {
     return (
-      <AuthenticatedLayout>
+      <Layout>
         <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -286,14 +254,14 @@ export default function DeleteWalletPage() {
             </div>
           </div>
         </section>
-      </AuthenticatedLayout>
+      </Layout>
     );
   }
 
   const currentStepData = steps[currentStep];
 
   return (
-    <AuthenticatedLayout>
+    <Layout>
       <section className="mx-auto max-w-2xl px-4 sm:px-6 pt-16 pb-24">
         <div className="flex items-center gap-4 mb-8">
           <Link href={`/carteiras/${walletId}/editar`}>
@@ -360,7 +328,7 @@ export default function DeleteWalletPage() {
                 style={{ backgroundColor: walletData.color || "#aaa" }}
               >
                 {walletData.imageUrl ? (
-                  <img
+                  <Image
                     src={walletData.imageUrl || "/placeholder.svg"}
                     alt="Wallet icon"
                     className="w-10 h-10 rounded-full object-cover"
@@ -401,6 +369,6 @@ export default function DeleteWalletPage() {
           <CardContent>{currentStepData.content}</CardContent>
         </Card>
       </section>
-    </AuthenticatedLayout>
+    </Layout>
   );
 }

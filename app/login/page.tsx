@@ -5,7 +5,7 @@ import type React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +20,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
-import { isValidCpfStructure, validateCpf } from "@/lib/validateCpf";
+import { isValidCpfStructure } from "@/lib/validateCpf";
 import { validatePassword } from "@/lib/validatePassword";
-import { UnauthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Layout";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,12 +35,6 @@ export default function LoginPage() {
   const [modalErrorTitle, setModalErrorTitle] = useState("");
 
   const router = useRouter();
-  const session = useSession();
-
-  if (session.status === "authenticated") {
-    router.push("/carteiras");
-    return null;
-  }
 
   const formatCPF = (value: string) => {
     let numbers = value.replace(/\D/g, "");
@@ -122,8 +116,12 @@ export default function LoginPage() {
     );
   };
 
+  const handleAuthenticated = () => {
+    return router.push("/carteiras");
+  };
+
   return (
-    <UnauthenticatedLayout>
+    <Layout noAuthBehavior="none" handleAuthenticated={handleAuthenticated}>
       <ErrorModal
         isOpen={!!modalErrorMessage}
         message={modalErrorMessage}
@@ -260,6 +258,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </section>
-    </UnauthenticatedLayout>
+    </Layout>
   );
 }

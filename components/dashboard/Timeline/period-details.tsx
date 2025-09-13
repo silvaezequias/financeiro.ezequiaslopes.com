@@ -3,12 +3,6 @@
 import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
 import { mockTransactions, getBalanceForPeriod } from "./transactions";
 
-interface Transaction {
-  date: Date;
-  amount: number;
-  description: string;
-}
-
 interface PeriodDetailsProps {
   period: { type: "day" | "month" | "year"; date: Date } | null;
   className?: string;

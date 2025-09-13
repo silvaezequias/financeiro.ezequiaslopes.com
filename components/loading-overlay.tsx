@@ -23,14 +23,12 @@ export function LoadingOverlay({
         className
       )}
     >
-      <div className="flex flex-col items-center bg-neutral-950 border-amber-300 border gap-4 p-8 rounded-xl shadow-lg">
+      <div className="flex flex-col items-center bg-neutral-950/50 gap-10 py-12 px-24  rounded-xl shadow-lg">
         <div className="relative">
-          <div className="w-16 h-16 border-4  rounded-full border-amber-300 animate-spin border-t-primary"></div>
+          <div className="w-16 h-16 border-2 rounded-full border-amber-300 animate-spin border-t-primary"></div>
         </div>
 
-        <p className="text-lg font-medium text-neutral-200 animate-pulse">
-          {message}
-        </p>
+        <p className="text-lg  text-neutral-200 animate-pulse">{message}</p>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import TimelineCell from "./cell";
-import { getBalanceForPeriod } from "./transactions";
 
 export type YearViewProps = {
   currentDate: Date;
@@ -28,7 +27,7 @@ export default function YearView(props: YearViewProps) {
     <div className="grid grid-cols-4 gap-2 w-full">
       {months.map((month, index) => {
         const monthDate = new Date(props.currentDate.getFullYear(), index, 1);
-        const balance = getBalanceForPeriod(monthDate, "month");
+        // const balance = getBalanceForPeriod(monthDate, "month");
 
         const isToday =
           index === new Date().getMonth() &&
