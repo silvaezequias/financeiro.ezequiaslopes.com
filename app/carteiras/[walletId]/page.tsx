@@ -76,7 +76,7 @@ export default function DashboardPage() {
     toast.warning(
       "Esta página está em desenvolvimento. As informações exibidas são apenas exemplos e não refletem dados reais."
     );
-  }, []);
+  }, [false]);
 
   if (isLoading) {
     return (

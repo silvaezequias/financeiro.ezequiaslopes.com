@@ -28,9 +28,7 @@ export function WalletDropdownSelect() {
   }
 
   function handleWalletSelection(walletId: string) {
-    if (currentWallet.id === walletId) return;
-
-    setCurrentWallet(walletId);
+    if (currentWallet.id !== walletId) setCurrentWallet(walletId);
     location.href = "/carteiras/" + walletId;
   }
 
