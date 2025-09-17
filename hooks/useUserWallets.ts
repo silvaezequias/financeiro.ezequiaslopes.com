@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Wallet } from "@prisma/client";
 import smartFetch from "@/lib/smartFetch";
 import localDatabase from "@/lib/localDatabase";
@@ -10,36 +10,49 @@ export function useUserWallets(): UserWallets {
   const [currentWallet, setCurrentWallet] = useState<Wallet | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchWallets = async () => {
-      try {
-        setLoading(true);
-        let response = (await smartFetch("/api/wallets")) as Wallet[];
+  const fetchWallets = useCallback(async () => {
+    try {
+      const cachedCurrent = localDatabase.get("currentWallet") as Wallet;
+      setLoading(true);
 
-        response = response.map((w) => {
-          w.name = formatter.text.capitalize(w.name);
-          return w;
-        });
+      let response = (await smartFetch("/api/wallets")) as Wallet[];
+      response = response.map((w) => {
+        w.name = formatter.text.capitalize(w.name);
+        return w;
+      });
 
-        setWallets(response);
+      setWallets(response);
+      localDatabase.set("wallets", response);
 
-        const storedWallet = localDatabase.get("currentWallet") as Wallet;
-        let selected = null;
-
-        if (storedWallet) {
-          selected = response.find((w) => w.id === storedWallet.id);
-        }
-
-        if (!selected && response.length) {
-          selected = response[0];
-          localDatabase.set("currentWallet", selected);
-        }
-
-        setCurrentWallet(selected || null);
-      } finally {
-        setLoading(false);
+      if (!cachedCurrent || !response.find((w) => w.id === cachedCurrent.id)) {
+        const newCurrent = response[0] || null;
+        setCurrentWallet(newCurrent);
+        if (newCurrent) localDatabase.set("currentWallet", newCurrent);
       }
-    };
+    } catch (err) {
+      toast.error("Erro ao carregar as wallets.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const cachedWallets = (localDatabase.get("wallets") || []) as Wallet[];
+    const cachedCurrent = localDatabase.get("currentWallet") as Wallet;
+
+    if (cachedWallets.length) {
+      setWallets(cachedWallets);
+
+      if (
+        cachedCurrent &&
+        cachedWallets.find((w) => w.id === cachedCurrent.id)
+      ) {
+        setCurrentWallet(cachedCurrent);
+      } else {
+        setCurrentWallet(cachedWallets[0]);
+        localDatabase.set("currentWallet", cachedWallets[0]);
+      }
+    }
 
     fetchWallets();
   }, []);
@@ -58,6 +71,7 @@ export function useUserWallets(): UserWallets {
     currentWallet: currentWallet as Wallet,
     setCurrentWallet: handleSetCurrentWallet,
     loading,
+    refreshWallets: fetchWallets,
   };
 }
 
@@ -66,4 +80,5 @@ export type UserWallets = {
   currentWallet: Wallet;
   setCurrentWallet: (walletId: Wallet["id"]) => void;
   loading: boolean;
+  refreshWallets: () => Promise<void>;
 };

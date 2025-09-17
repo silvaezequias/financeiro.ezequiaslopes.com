@@ -20,18 +20,15 @@ const currencies = [
 ];
 
 export default function WalletsPage() {
-  const { wallets } = useUserWallets();
+  const { wallets, setCurrentWallet } = useUserWallets();
   const router = useRouter();
-
-  useEffect(() => {
-    console.log(wallets);
-  }, [wallets]);
 
   const totalBalance = wallets
     .filter((w) => w.currency === "BRL")
     .reduce((sum, wallet) => sum + wallet.balance, 0);
 
   const handleOpenWallet = (walletId: string) => {
+    setCurrentWallet(walletId);
     router.push(`/carteiras/${walletId}/`);
   };
 

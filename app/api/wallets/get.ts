@@ -57,6 +57,7 @@ export const handleGet: Middleware<AuthenticatedContext> = async (req) => {
         balance: true,
         currency: true,
         createdAt: true,
+        updatedAt: true,
       },
       currentWallet
     );

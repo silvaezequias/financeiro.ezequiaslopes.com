@@ -86,9 +86,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUser]);
 
   const logout = useCallback(() => {
-    signOut({ redirect: false });
     localDatabase.remove("user");
+    localDatabase.remove("wallets");
+    localDatabase.remove("currentWallet");
+
     setUser(null);
+
+    signOut({ redirect: false });
   }, []);
 
   const login = useCallback(

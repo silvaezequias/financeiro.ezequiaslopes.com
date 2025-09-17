@@ -71,7 +71,7 @@ export const handlePost: Middleware<CreateWalletContext> = async (req) => {
     walletMember
   );
 
-  const wallet = await validation.wallet(
+  const wallet = validation.wallet(
     {
       id: true,
       name: true,
@@ -79,9 +79,16 @@ export const handlePost: Middleware<CreateWalletContext> = async (req) => {
       color: false,
       imageUrl: false,
       balance: true,
+      createdAt: true,
     },
     walletObject
   );
 
-  return Response.json({ member: { ...member, wallet } }, { status: 201 });
+  const stats = {
+    creditCards: 0,
+    members: 1,
+    transactions: 0,
+  };
+
+  return Response.json({ ...wallet, stats }, { status: 201 });
 };

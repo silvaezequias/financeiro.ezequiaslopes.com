@@ -22,6 +22,8 @@ import smartFetch from "@/lib/smartFetch";
 import formatter from "@/formatter";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import Image from "next/image";
+import { GetWallets } from "@/types/wallet";
+import { useRouter } from "next/navigation";
 
 export default function NewWalletPage() {
   const [walletData, setWalletData] = useState({
@@ -30,8 +32,10 @@ export default function NewWalletPage() {
     imageUrl: "",
     currency: "BRL",
   });
+  const [loading, setLoading] = useState(false);
 
-  const { wallets } = useUserWallets();
+  const { wallets, setCurrentWallet } = useUserWallets();
+  const router = useRouter();
 
   const predefinedColors = [
     { name: "Verde", value: "#10b981", bg: "bg-emerald-500" },
@@ -62,16 +66,19 @@ export default function NewWalletPage() {
     setWalletData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    smartFetch("/api/wallets/", {
+    setLoading(true);
+
+    const res = (await smartFetch("/api/wallets/", {
       method: "POST",
       body: JSON.stringify(walletData),
-    })
-      .then((res) => res.json())
-      .then(console.log)
-      .catch(console.log);
+    })) as GetWallets;
+
+    if (res) router.push(`/carteiras/${res.id}`);
+
+    setLoading(false);
   };
 
   return (
@@ -289,9 +296,9 @@ export default function NewWalletPage() {
                     <Button
                       type="submit"
                       className="flex-1 bg-amber-300 hover:bg-amber-200 text-black font-medium"
-                      disabled={!walletData.name.trim()}
+                      disabled={!walletData.name.trim() || loading}
                     >
-                      Criar Carteira
+                      {loading ? "Verificando..." : "Criar Carteira"}
                     </Button>
                   </div>
                 </form>

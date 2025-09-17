@@ -27,6 +27,7 @@ import ExpenseCategory from "../../../components/dashboard/ExpenseCategory";
 import WeeklyExpenses from "../../../components/dashboard/WeeklyExpenses";
 import { toast } from "sonner";
 import { useUserWallets } from "@/hooks/useUserWallets";
+import Head from "next/head";
 
 type DashboardParams = {
   walletId: string;
@@ -53,16 +54,23 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    if (userWallets.wallets.length) {
+    if (userWallets.wallets.length && !userWallets.loading) {
       const wallet = userWallets.wallets.find((w) => w.id === walletId);
 
       if (wallet) {
         setIsLoading(false);
+        userWallets.setCurrentWallet(walletId);
       } else {
         router.push("/carteiras/nao-encontrada");
       }
     }
-  }, [walletId, userWallets.wallets, router]);
+  }, [walletId, userWallets.wallets, router, userWallets.loading]);
+
+  useEffect(() => {
+    if (userWallets.currentWallet) {
+      document.title = userWallets.currentWallet.name;
+    }
+  }, [userWallets.currentWallet]);
 
   useEffect(() => {
     toast.warning(

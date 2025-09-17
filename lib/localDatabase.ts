@@ -1,4 +1,7 @@
-function saveData(local: string, data: { [key: string]: unknown }) {
+type DataObject = { [key: string]: unknown };
+type Data = DataObject | DataObject[];
+
+function saveData(local: string, data: Data) {
   const stringData = JSON.stringify(data);
 
   localStorage.setItem(local, stringData);
