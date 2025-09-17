@@ -14,7 +14,7 @@ const SessionInjector: Middleware<FlowContext> = async (req, _, next) => {
 
   if (session) {
     const user = await database.user.findUnique({
-      where: { id: session.user.id },
+      where: { email: session.user.email! },
     });
 
     if (user) {

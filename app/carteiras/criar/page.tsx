@@ -17,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Wallet, Palette } from "lucide-react";
 import Link from "next/link";
 import { garamond } from "@/lib/fonts";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import smartFetch from "@/lib/smartFetch";
 import formatter from "@/formatter";
 import { useUserWallets } from "@/hooks/useUserWallets";

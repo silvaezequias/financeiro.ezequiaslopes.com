@@ -26,11 +26,12 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { garamond } from "@/lib/fonts";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import { ErrorModal } from "@/components/error-modal";
 import { useRouter } from "next/navigation";
 import { validatePassword } from "@/lib/validatePassword";
 import smartFetch from "@/lib/smartFetch";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -133,12 +134,17 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleRegister = () => {
-    // TODO: Implementar registro com Google
-    setModalErrorTitle("Funcionalidade em breve");
-    setModalErrorMessage(
-      "Estamos trabalhando para trazer essa funcionalidade em breve. Fique atento às atualizações!"
-    );
+  const handleGoogleRegister = async () => {
+    const res = await signIn("google", {
+      callbackUrl: "/carteiras",
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      setIsLoading(false);
+      console.log(res.error);
+    }
   };
 
   const handleAuthenticated = () => {

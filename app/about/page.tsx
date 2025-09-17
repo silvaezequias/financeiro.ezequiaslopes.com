@@ -1,7 +1,7 @@
 import { garamond, jetmono } from "@/lib/fonts";
 import type { Metadata } from "next";
 import brand from "@/lib/brand";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export const metadata: Metadata = {
   title: `Sobre Nós - ${brand.brandName}`,

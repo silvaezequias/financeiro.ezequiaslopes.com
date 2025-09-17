@@ -22,7 +22,8 @@ import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
 import { isValidCpfStructure } from "@/lib/validateCpf";
 import { validatePassword } from "@/lib/validatePassword";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
+import { useUser } from "@/hooks/useUser";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +31,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useUser();
 
   const [modalErrorMessage, setModalErrorMessage] = useState("");
   const [modalErrorTitle, setModalErrorTitle] = useState("");
@@ -92,8 +94,8 @@ export default function LoginPage() {
       return;
     }
 
-    const res = await signIn("credentials", {
-      redirect: false,
+    const res = await login({
+      redirectUrl: "/carteiras",
       cpf: cpf.replace(/\D/g, ""),
       password,
     });
@@ -108,12 +110,17 @@ export default function LoginPage() {
     setIsLoading(false);
   };
 
-  const handleGoogleLogin = () => {
-    // TODO: Implementar login com Google
-    setModalErrorTitle("Login com Google indisponível");
-    setModalErrorMessage(
-      "Funcionalidade de login com Google ainda não foi implementada. Por favor, aguarde proximas atualizações."
-    );
+  const handleGoogleLogin = async () => {
+    const res = await signIn("google", {
+      callbackUrl: "/carteiras",
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      setIsLoading(false);
+      console.log(res.error);
+    }
   };
 
   const handleAuthenticated = () => {

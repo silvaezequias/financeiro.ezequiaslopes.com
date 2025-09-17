@@ -1,7 +1,10 @@
 import NextAuth, { AuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { database } from "@/lib/database";
+import { User } from "@prisma/client";
+import { UserRole } from "@/lib/authorization/role";
 
 const authOptions = {
   session: {
@@ -9,6 +12,10 @@ const authOptions = {
     updateAge: 10 * 60,
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "CPF e Senha",
       credentials: {
@@ -26,7 +33,7 @@ const authOptions = {
 
         const isValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password!
         );
 
         if (!isValid) return null;
@@ -55,6 +62,34 @@ const authOptions = {
         session.user.verified = token.verified as boolean;
       }
       return session;
+    },
+    async signIn(params) {
+      if (params.account?.provider === "google") {
+        const existingUser = await database.user.findUnique({
+          where: { email: params.user.email! },
+        });
+
+        if (existingUser) {
+          if (existingUser.googleId !== params.user.id) {
+            await database.user.update({
+              where: { email: params.user.email! },
+              data: { googleId: params.user.id },
+            });
+          }
+        } else {
+          await database.user.create({
+            data: {
+              email: params.user.email!,
+              googleId: params.user.id!,
+              name: params.user.name!,
+              role: UserRole.id,
+              verified: false,
+            },
+          });
+        }
+      }
+
+      return true;
     },
   },
 } as AuthOptions;

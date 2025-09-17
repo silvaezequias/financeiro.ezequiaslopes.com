@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import DashboardCard from "@/components/dashboard/dashboard-card";
 import PeriodDetails from "@/components/dashboard/Timeline/period-details";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import Timeline from "@/components/dashboard/Timeline";
 import { isAdmin } from "../../../components/dashboard/financialData";
 import WalletComponent from "../../../components/dashboard/Wallet";

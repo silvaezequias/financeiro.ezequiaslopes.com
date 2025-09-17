@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, Plus, Edit, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { garamond } from "@/lib/fonts";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import formatter from "@/formatter";
 import { useRouter } from "next/navigation";

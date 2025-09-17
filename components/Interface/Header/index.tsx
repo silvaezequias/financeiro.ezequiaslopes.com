@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut, SessionContextValue } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,30 +17,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import brand from "@/lib/brand";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { garamond, jetmono } from "@/lib/fonts";
-import brand from "@/lib/brand";
-import { WalletDropdownSelect } from "./Wallet/WalletDropdownSelect";
+import { WalletDropdownSelect } from "../../Wallet/WalletDropdownSelect";
+import { UserPropertiesContext, useUser } from "@/hooks/useUser";
 
 type SessionOptions = {
-  session?: SessionContextValue;
+  user?: UserPropertiesContext;
 };
 
-export default function SiteHeader(props: SessionOptions) {
+export default function Header(props: SessionOptions) {
   const pathname = usePathname();
-  const { data: session, status } = props.session || {};
-  const isAuthenticated = status === "authenticated";
-  const user = session?.user;
+  const { user, logout, loading } = useUser();
+  const router = useRouter();
 
-  const links = isAuthenticated
-    ? []
-    : [
-        { href: "/", label: "Início" },
-        { href: "/login", label: "Entrar" },
-      ];
+  const links = [
+    { href: "/", label: "Início" },
+    { href: "/login", label: "Entrar" },
+  ];
 
   const handleLogout = () => {
-    signOut({ callbackUrl: "/" });
+    logout();
+    router.push("/");
   };
 
   const getInitials = (name: string) => {
@@ -73,27 +72,28 @@ export default function SiteHeader(props: SessionOptions) {
           aria-label="Primária"
           className="hidden md:flex items-center gap-8"
         >
-          {links.map((l) => {
-            const active = pathname === l.href;
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={`text-sm font-medium transition-colors relative ${
-                  active
-                    ? "text-amber-300"
-                    : "text-neutral-400 hover:text-neutral-200"
-                }`}
-              >
-                {l.label}
-                {active && (
-                  <span className="absolute -bottom-1 left-0 w-full h-px bg-amber-300" />
-                )}
-              </Link>
-            );
-          })}
-          {isAuthenticated && <WalletDropdownSelect />}
-          {isAuthenticated && user && (
+          {!user &&
+            links.map((l) => {
+              const active = pathname === l.href;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`text-sm font-medium transition-colors relative ${
+                    active
+                      ? "text-amber-300"
+                      : "text-neutral-400 hover:text-neutral-200"
+                  }`}
+                >
+                  {l.label}
+                  {active && (
+                    <span className="absolute -bottom-1 left-0 w-full h-px bg-amber-300" />
+                  )}
+                </Link>
+              );
+            })}
+          {user && <WalletDropdownSelect />}
+          {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -173,7 +173,7 @@ export default function SiteHeader(props: SessionOptions) {
                 </SheetTrigger>
               </SheetHeader>
 
-              {isAuthenticated && user && (
+              {user && (
                 <div className="mt-6 p-4 bg-neutral-900/30 rounded-lg border border-neutral-800">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
@@ -208,7 +208,7 @@ export default function SiteHeader(props: SessionOptions) {
                     </Link>
                   );
                 })}
-                {isAuthenticated && (
+                {user && (
                   <>
                     <Link
                       href="/profile"

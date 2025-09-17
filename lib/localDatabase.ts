@@ -13,9 +13,14 @@ function getData(local: string) {
   else return null;
 }
 
+function removeData(local: string) {
+  localStorage.removeItem(local);
+}
+
 const localDatabase = {
   set: saveData,
   get: getData,
+  remove: removeData,
 };
 
 export default localDatabase;

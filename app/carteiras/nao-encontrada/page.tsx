@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { garamond, jetmono } from "@/lib/fonts";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export default function WalletNotFound() {
   return (

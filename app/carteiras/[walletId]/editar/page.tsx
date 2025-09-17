@@ -17,7 +17,7 @@ import { ArrowLeft, Wallet as WalletIcon, Palette, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { garamond } from "@/lib/fonts";
-import { Layout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import { useUserWallets } from "@/hooks/useUserWallets";
 import { Wallet } from "@prisma/client";
 import formatter from "@/formatter";
