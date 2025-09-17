@@ -32,7 +32,7 @@ export function WalletDropdownSelect() {
     location.href = "/carteiras/" + walletId;
   }
 
-  if (loading) {
+  if (!wallets.length || loading) {
     return (
       <div>
         <Button disabled variant="default" className="bg-transparentw-full">
