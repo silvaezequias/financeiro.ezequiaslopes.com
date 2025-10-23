@@ -25,14 +25,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 import { ErrorModal } from "@/components/error-modal";
-import { set } from "date-fns";
 import { useRouter } from "next/navigation";
 import { validatePassword } from "@/lib/validatePassword";
+import smartFetch from "@/lib/smartFetch";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -116,26 +115,17 @@ export default function RegisterPage() {
       return;
     }
 
-    const res = await fetch("/api/auth/register", {
+    const res = await smartFetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
-    }).then((r) => {
-      try {
-        console.log(r);
-        if (r.status === 201) {
-          router.push("/login");
-        }
-        setIsLoading(false);
-        return r.json();
-      } catch (err) {
-        console.log("error", err);
-        setIsLoading(false);
-        return { error: "" };
-      }
     });
 
     setIsLoading(false);
+
+    if (res.status === 201) {
+      router.push("/login");
+    }
 
     if ("error" in res && res.error) {
       setError(res.error);
@@ -144,16 +134,25 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleRegister = () => {
-    // TODO: Implementar registro com Google
-    setModalErrorTitle("Funcionalidade em breve");
-    setModalErrorMessage(
-      "Estamos trabalhando para trazer essa funcionalidade em breve. Fique atento às atualizações!"
-    );
+  const handleGoogleRegister = async () => {
+    const res = await signIn("google", {
+      callbackUrl: "/carteiras",
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      setIsLoading(false);
+      console.log(res.error);
+    }
+  };
+
+  const handleAuthenticated = () => {
+    return router.push("/carteiras");
   };
 
   return (
-    <Layout>
+    <Layout noAuthBehavior="none" handleAuthenticated={handleAuthenticated}>
       <ErrorModal
         isOpen={!!modalErrorMessage}
         message={modalErrorMessage}

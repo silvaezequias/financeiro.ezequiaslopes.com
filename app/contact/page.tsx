@@ -3,15 +3,13 @@
 import { useActionState } from "react";
 import { useState } from "react";
 import { Mail, Copy, Check } from "lucide-react";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { sendMessage } from "./actions";
 import { garamond, jetmono } from "@/lib/fonts";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import brand from "@/lib/brand";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export default function Page() {
   const [state, formAction, isPending] = useActionState(sendMessage, null);
@@ -31,7 +29,7 @@ export default function Page() {
   }
 
   return (
-    <Layout>
+    <Layout waitForAuth={false}>
       <section className="mx-auto max-w-3xl px-4 sm:px-6 pt-16 pb-20">
         <h1
           className={`${garamond.className} text-3xl sm:text-4xl text-neutral-100`}

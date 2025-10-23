@@ -28,18 +28,12 @@ export async function checkCpfExists(cpf: string): Promise<boolean | null> {
     );
     return res.data === true;
   } catch {
-    return null; // fallback in case of error
+    return null;
   }
 }
 
-export async function validateCpf(
-  cpf: string
-): Promise<{ valid: boolean; verified: boolean }> {
+export async function validateCpf(cpf: string): Promise<{ valid: boolean }> {
   const structureValid = isValidCpfStructure(cpf);
-  if (!structureValid) return { valid: false, verified: false };
-
-  const exists = await checkCpfExists(cpf);
-  if (exists === true) return { valid: true, verified: true };
-  if (exists === null) return { valid: true, verified: false }; // fallback
-  return { valid: false, verified: false };
+  // TODO: implementar a verificação de CPF pela api dedicada.
+  return { valid: structureValid };
 }

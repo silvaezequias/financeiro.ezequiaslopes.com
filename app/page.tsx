@@ -9,14 +9,14 @@ import {
   Target,
   DollarSign,
 } from "lucide-react";
-import SiteHeader from "@/components/site-header";
+
 import { Button } from "@/components/ui/button";
 import { garamond, jetmono } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export default function FinancePage() {
   return (
-    <Layout>
+    <Layout waitForAuth={false} noAuthBehavior="none">
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-16 pb-24">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16 items-center">
           <div>
@@ -39,7 +39,7 @@ export default function FinancePage() {
                 asChild
                 className="bg-amber-300 text-black hover:bg-amber-200"
               >
-                <Link href="/dashboard">Acessar Dashboard</Link>
+                <Link href="/carteiras">Acessar Dashboard</Link>
               </Button>{" "}
               <Button
                 asChild

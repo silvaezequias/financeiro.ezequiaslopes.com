@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/dashboard`,
+      url: `${baseUrl}/carteiras`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,

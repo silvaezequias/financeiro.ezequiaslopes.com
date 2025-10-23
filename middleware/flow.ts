@@ -1,3 +1,4 @@
+import { locales } from "@/i18n";
 import { Credentials } from "@/lib/authorization/credentials";
 import { User } from "@prisma/client";
 
@@ -18,5 +19,12 @@ export type AuthenticatedSession = {
   };
 };
 
+export type LocaleContext = {
+  locale: { lang: keyof typeof locales };
+};
+
 export type PassportSession = AnonymousSession | AuthenticatedSession;
-export type FlowContext = PassportSession & Record<string, unknown>;
+export type FlowContext = PassportSession &
+  Record<string, unknown> &
+  LocaleContext;
+export type AuthenticatedContext = FlowContext & AuthenticatedSession;

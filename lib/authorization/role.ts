@@ -4,7 +4,7 @@ class Role {
   constructor(public id: string, public credentials: Credentials[]) {}
 }
 
-const { user, session } = credendials;
+const { user, session, wallet, transaction, walletSummary } = credendials;
 
 export const AnonymousRole = new Role("anonymous", [session.CreateSession]);
 export const UserRole = new Role("user", [
@@ -12,7 +12,24 @@ export const UserRole = new Role("user", [
   user.UpdateUser,
   session.ReadSession,
   session.DeleteSession,
+
+  wallet.CreateWallet,
+  wallet.ReadWallet,
+  wallet.ReadWalletList,
+  wallet.DeleteWallet,
+  wallet.LeaveWallet,
+  wallet.UpdateWallet,
+
+  walletSummary.ReadWalletSummary,
+  walletSummary.ReadWalletSummaryList,
+
+  transaction.CreateTransaction,
+  transaction.ReadTransaction,
+  transaction.ReadTransactionList,
+  transaction.UpdateTransaction,
+  transaction.DeleteTransaction,
 ]);
+
 export const UserManagerRole = new Role("user_manager", [
   ...UserRole.credentials,
   user.CreateUser,
@@ -26,11 +43,14 @@ export const UserManagerRole = new Role("user_manager", [
 
 export const AdminRole = new Role("admin", [...UserManagerRole.credentials]);
 
-export type Roles =
-  | typeof AnonymousRole
-  | typeof UserRole
-  | typeof UserManagerRole
-  | typeof AdminRole;
+export const RolesId = [
+  AnonymousRole.id,
+  UserRole.id,
+  UserManagerRole.id,
+  AdminRole.id,
+] as const;
+
+export type Roles = Role;
 
 export function getRoleById(roleId: string): Role | undefined {
   switch (roleId) {

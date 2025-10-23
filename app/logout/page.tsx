@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,11 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { garamond } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
+
 export default function LogoutPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session, status } = useSession();
   const router = useRouter();
   const user = {} as {
     name?: string;
@@ -38,13 +39,8 @@ export default function LogoutPage() {
     }
   };
 
-  if (status === "unauthenticated" && !session) {
-    router.push("/login");
-    return null;
-  }
-
   return (
-    <Layout>
+    <Layout noAuthBehavior="redirect" redirectUrl="/login">
       <section className="mx-auto max-w-md px-4 sm:px-6 pt-16 pb-24">
         <div className="text-center mb-8">
           <h1
@@ -91,7 +87,7 @@ export default function LogoutPage() {
                 variant="outline"
                 className="w-full border-neutral-700 bg-neutral-900/50 text-neutral-200 hover:bg-neutral-800"
               >
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <Link href="/carteiras" className="flex items-center gap-2">
                   <ArrowLeft className="h-4 w-4" />
                   Cancelar e voltar ao Dashboard
                 </Link>

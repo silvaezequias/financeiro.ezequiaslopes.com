@@ -4,17 +4,16 @@ import { ShieldX, Home, LogOut, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
-import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Layout } from "@/components/Interface/Layout";
+import { useUser } from "@/hooks/useUser";
 
 export default function AccessDeniedPage() {
-  const { data: session } = useSession();
+  const { user, logout } = useUser();
   const router = useRouter();
 
   const handleLogout = () => {
-    signOut({ redirect: false });
+    logout();
     router.push("/");
   };
 
@@ -23,8 +22,7 @@ export default function AccessDeniedPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-neutral-200 flex flex-col justify-between">
-      <SiteHeader />
+    <Layout noAuthBehavior="none">
       <div className=" bg-black flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-black border-neutral-700">
           <CardContent className="p-8 text-center">
@@ -54,7 +52,7 @@ export default function AccessDeniedPage() {
                     Voltar à página inicial
                   </Link>
                 </Button>
-                {session ? (
+                {user ? (
                   <Button
                     variant="outline"
                     onClick={handleLogout}
@@ -78,7 +76,6 @@ export default function AccessDeniedPage() {
           </CardContent>
         </Card>
       </div>
-      <SiteFooter />
-    </main>
+    </Layout>
   );
 }

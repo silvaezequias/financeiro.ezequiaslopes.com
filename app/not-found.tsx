@@ -2,15 +2,13 @@
 
 import Link from "next/link";
 import { ArrowLeft, Home, Search } from "lucide-react";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { garamond, jetmono } from "@/lib/fonts";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export default function NotFound() {
   return (
-    <Layout>
+    <Layout waitForAuth={false}>
       <section className="mx-auto max-w-3xl px-4 sm:px-6 pt-32 pb-32">
         <div className="text-center">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-300/10 ring-1 ring-amber-300/30 mb-6">
@@ -20,7 +18,7 @@ export default function NotFound() {
           <p
             className={`${jetmono.className} text-[11px] uppercase tracking-widest text-neutral-500`}
           >
-            Erro 404
+            Erro nao-encontrada
           </p>
           <h1
             className={`${garamond.className} mt-3 text-5xl sm:text-7xl leading-tight text-neutral-100`}
@@ -61,7 +59,7 @@ export default function NotFound() {
                 Veja o painel de controle financeiro.
               </p>
               <Link
-                href="/work"
+                href="/carteiras"
                 className="mt-2 text-sm text-amber-300 hover:text-amber-200 inline-block"
               >
                 Dashboard →

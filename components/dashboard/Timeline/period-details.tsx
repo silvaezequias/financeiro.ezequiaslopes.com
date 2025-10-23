@@ -3,12 +3,6 @@
 import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
 import { mockTransactions, getBalanceForPeriod } from "./transactions";
 
-interface Transaction {
-  date: Date;
-  amount: number;
-  description: string;
-}
-
 interface PeriodDetailsProps {
   period: { type: "day" | "month" | "year"; date: Date } | null;
   className?: string;
@@ -21,7 +15,7 @@ export default function PeriodDetails({
   if (!period) {
     return (
       <div
-        className={`bg-neutral-950/40 border border-neutral-900 rounded-lg p-4 w-full ${className}`}
+        className={`bg-neutral-950/90 border border-neutral-900 rounded-lg p-4 w-full ${className}`}
       >
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="h-5 w-5 text-amber-300" />

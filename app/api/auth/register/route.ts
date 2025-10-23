@@ -1,13 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 import { database } from "@/lib/database";
-import controller from "@/middleware";
+import { controller } from "@/middleware";
 import { Middleware } from "nextfastapi/types";
 import { FlowContext } from "@/middleware/flow";
-import { BadRequestError } from "nextfastapi/errors";
+import { BadRequestError, UnauthorizedError } from "nextfastapi/errors";
 import { User } from "@prisma/client";
 import validation from "@/validation";
+import { UserRole } from "@/lib/authorization/role";
+import credentials from "@/lib/authorization/credentials";
+import { locale } from "@/i18n";
 
 type PostInputBody = {
   name: string;
@@ -26,6 +28,17 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
   _,
   next
 ) => {
+  const $ = locale(req.context.locale.lang);
+  const user = req.context.session.user;
+
+  if (!user.canDo(credentials.session.CreateSession)) {
+    const { message, action } = $.api.user.cant.access.userRegister;
+    throw new UnauthorizedError({
+      message,
+      action,
+    });
+  }
+
   const { confirmPassword, ...props } = (await req.json()) as PostInputBody;
 
   const userObject = await validation.user(
@@ -40,8 +53,9 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
     props as unknown as Partial<User>
   );
 
-  if (props.password !== confirmPassword) {
-    throw new BadRequestError({ message: "As senhas não conferem." });
+  if (userObject.password !== confirmPassword) {
+    const { message, action } = $.validation.password.mismatch;
+    throw new BadRequestError({ message, action });
   }
 
   const existingUser = await database.user.findFirst({
@@ -49,8 +63,11 @@ const handlePostValidation: Middleware<UserRegisterContext> = async (
   });
 
   if (existingUser) {
+    const { message, action } = $.validation.email_cpf.exists;
+
     throw new BadRequestError({
-      message: "Já existe um cadastrado com esse CPF ou Email.",
+      message,
+      action,
     });
   }
 
@@ -70,11 +87,24 @@ const handlePost: Middleware<UserRegisterContext> = async (req) => {
       email: userData.email!,
       password: hashedPassword,
       phone: userData.phone,
-      role: userData.role,
+      role: UserRole.id,
+      verified: false,
     },
   });
 
-  return Response.json(userData, { status: 201 });
+  const output = validation.user(
+    {
+      birthDate: true,
+      cpf: true,
+      email: true,
+      name: true,
+      phone: true,
+      createdAt: true,
+    },
+    createdUser
+  );
+
+  return Response.json(output, { status: 201 });
 };
 
 controller.post(handlePostValidation, handlePost);

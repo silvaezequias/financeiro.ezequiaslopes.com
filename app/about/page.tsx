@@ -1,20 +1,17 @@
-import Image from "next/image";
-import SiteHeader from "@/components/site-header";
-import SiteFooter from "@/components/site-footer";
 import { garamond, jetmono } from "@/lib/fonts";
 import type { Metadata } from "next";
 import brand from "@/lib/brand";
-import Layout from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
 
 export const metadata: Metadata = {
   title: `Sobre Nós - ${brand.brandName}`,
   description:
-    "Conheça mais sobre mim, Ezequias Lopes, e minha paixão por tecnologia, fotografia e música.",
+    "Conheça mais sobre a plataforma e como nós funcionamos para economizar o seu dinheiro",
 };
 
 export default function Page() {
   return (
-    <Layout>
+    <Layout waitForAuth={false}>
       <section className="mx-auto max-w-5xl px-4 sm:px-6 pt-16 pb-20">
         <div className="grid gap-10 items-center justify-center">
           <div>

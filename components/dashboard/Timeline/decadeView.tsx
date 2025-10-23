@@ -1,5 +1,4 @@
 import TimelineCell from "./cell";
-import { getBalanceForPeriod } from "./transactions";
 
 export type DecadeViewProps = {
   currentDate: Date;

@@ -5,7 +5,7 @@ import type React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Eye, EyeOff, CreditCard, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +20,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { garamond } from "@/lib/fonts";
 import { ErrorModal } from "@/components/error-modal";
-import { validateCpf } from "@/lib/validateCpf";
+import { isValidCpfStructure } from "@/lib/validateCpf";
 import { validatePassword } from "@/lib/validatePassword";
-import { UnauthenticatedLayout } from "@/components/Layout";
+import { Layout } from "@/components/Interface/Layout";
+import { useUser } from "@/hooks/useUser";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -30,17 +31,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useUser();
 
   const [modalErrorMessage, setModalErrorMessage] = useState("");
   const [modalErrorTitle, setModalErrorTitle] = useState("");
 
   const router = useRouter();
-  const session = useSession();
-
-  if (session.status === "authenticated") {
-    router.push("/dashboard");
-    return null;
-  }
 
   const formatCPF = (value: string) => {
     let numbers = value.replace(/\D/g, "");
@@ -90,22 +86,16 @@ export default function LoginPage() {
       return;
     }
 
-    const validatedCpf = await validateCpf(cpf);
+    const isValidCpf = isValidCpfStructure(cpf);
 
-    if (!validatedCpf.valid) {
+    if (!isValidCpf) {
       setError("Por favor, insira um CPF válido.");
       setIsLoading(false);
       return;
     }
 
-    if (!validatedCpf.verified) {
-      setError("Por favor, insira um CPF existente.");
-      setIsLoading(false);
-      return;
-    }
-
-    const res = await signIn("credentials", {
-      redirect: false,
+    const res = await login({
+      redirectUrl: "/carteiras",
       cpf: cpf.replace(/\D/g, ""),
       password,
     });
@@ -116,20 +106,29 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/carteiras");
     setIsLoading(false);
   };
 
-  const handleGoogleLogin = () => {
-    // TODO: Implementar login com Google
-    setModalErrorTitle("Login com Google indisponível");
-    setModalErrorMessage(
-      "Funcionalidade de login com Google ainda não foi implementada. Por favor, aguarde proximas atualizações."
-    );
+  const handleGoogleLogin = async () => {
+    const res = await signIn("google", {
+      callbackUrl: "/carteiras",
+      redirect: false,
+    });
+
+    if (res?.error) {
+      setError(res.error);
+      setIsLoading(false);
+      console.log(res.error);
+    }
+  };
+
+  const handleAuthenticated = () => {
+    return router.push("/carteiras");
   };
 
   return (
-    <UnauthenticatedLayout>
+    <Layout noAuthBehavior="none" handleAuthenticated={handleAuthenticated}>
       <ErrorModal
         isOpen={!!modalErrorMessage}
         message={modalErrorMessage}
@@ -266,6 +265,6 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </section>
-    </UnauthenticatedLayout>
+    </Layout>
   );
 }
