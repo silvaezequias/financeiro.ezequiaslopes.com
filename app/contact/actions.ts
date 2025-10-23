@@ -22,6 +22,12 @@ export async function sendMessage(prevState: any, formData: FormData) {
     return { ok: false, errors };
   }
 
+  await database?.mail.create({
+    data: {
+      body: `Nome: ${name}\nE-mail: ${email}\n\nMensagem:\n${message}`,
+    },
+  });
+
   return {
     ok: true,
     message: "Obrigado! Sua mensagem foi enviada. Retornarei em breve.",
